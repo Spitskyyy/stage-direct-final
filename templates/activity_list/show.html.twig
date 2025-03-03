@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ActivityList{% endblock %}
+
+{% block body %}
+    <h1>ActivityList</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ activity_list.id }}</td>
+            </tr>
+            <tr>
+                <th>Contained</th>
+                <td>{{ activity_list.contained }}</td>
+            </tr>
+            <tr>
+                <th>Is_verified</th>
+                <td>{{ activity_list.isVerified ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_activity_list_index') }}">back to list</a>
+
+    <a href="{{ path('app_activity_list_edit', {'id': activity_list.id}) }}">edit</a>
+
+    {{ include('activity_list/_delete_form.html.twig') }}
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ActivityList index{% endblock %}
+
+{% block body %}
+    <h1>ActivityList index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Contained</th>
+                <th>Is_verified</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for activity_list in activity_lists %}
+            <tr>
+                <td>{{ activity_list.id }}</td>
+                <td>{{ activity_list.contained }}</td>
+                <td>{{ activity_list.isVerified ? 'Yes' : 'No' }}</td>
+                <td>
+                    <a href="{{ path('app_activity_list_show', {'id': activity_list.id}) }}">show</a>
+                    <a href="{{ path('app_activity_list_edit', {'id': activity_list.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_activity_list_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit VisitReport{% endblock %}
+
+{% block body %}
+    <h1>Edit VisitReport</h1>
+
+    {{ include('visit_report/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_visit_report_index') }}">back to list</a>
+
+    {{ include('visit_report/_delete_form.html.twig') }}
+{% endblock %}
