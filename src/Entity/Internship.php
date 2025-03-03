@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InternshipRepository::class)]
+#[ORM\Table(name: 'tbl_internship')]
 class Internship
 {
     #[ORM\Id]
@@ -35,12 +36,14 @@ class Internship
     #[ORM\ManyToOne(inversedBy: 'internships')]
     private ?Company $company = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+
+    #[ORM\OneToOne(inversedBy: 'internship', cascade: ['persist', 'remove'])]
+    private ?VisitReport $visitreport = null;
+
+    #[ORM\OneToOne(inversedBy: 'internship', cascade: ['persist', 'remove'])]
     private ?ActivityList $activitylist = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?VisitReport $visitreport = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -130,6 +133,18 @@ class Internship
         return $this;
     }
 
+    public function getVisitreport(): ?VisitReport
+    {
+        return $this->visitreport;
+    }
+
+    public function setVisitreport(?VisitReport $visitreport): static
+    {
+        $this->visitreport = $visitreport;
+
+        return $this;
+    }
+
     public function getActivitylist(): ?ActivityList
     {
         return $this->activitylist;
@@ -142,15 +157,4 @@ class Internship
         return $this;
     }
 
-    public function getVisitreport(): ?VisitReport
-    {
-        return $this->visitreport;
-    }
-
-    public function setVisitreport(?VisitReport $visitreport): static
-    {
-        $this->visitreport = $visitreport;
-
-        return $this;
-    }
 }

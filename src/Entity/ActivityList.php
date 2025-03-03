@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ActivityListRepository::class)]
+#[ORM\Table(name: 'tbl_activity_list')]
 class ActivityList
 {
     #[ORM\Id]
@@ -19,6 +20,9 @@ class ActivityList
 
     #[ORM\Column(nullable: true)]
     private ?bool $is_verified = null;
+
+    #[ORM\OneToOne(mappedBy: 'activitylist', cascade: ['persist', 'remove'])]
+    private ?Internship $internship = null;
 
     public function getId(): ?int
     {
@@ -45,6 +49,28 @@ class ActivityList
     public function setIsVerified(?bool $is_verified): static
     {
         $this->is_verified = $is_verified;
+
+        return $this;
+    }
+
+    public function getInternship(): ?Internship
+    {
+        return $this->internship;
+    }
+
+    public function setInternship(?Internship $internship): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($internship === null && $this->internship !== null) {
+            $this->internship->setActivitylist(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($internship !== null && $internship->getActivitylist() !== $this) {
+            $internship->setActivitylist($this);
+        }
+
+        $this->internship = $internship;
 
         return $this;
     }
