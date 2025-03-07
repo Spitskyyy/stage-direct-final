@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250303102459 extends AbstractMigration
+final class Version20250304084504 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -30,7 +30,7 @@ final class Version20250303102459 extends AbstractMigration
         $this->addSql('CREATE UNIQUE INDEX UNIQ_7992FA9D60443FB7 ON tbl_internship (visitreport_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_7992FA9D96EB1108 ON tbl_internship (activitylist_id)');
         $this->addSql('CREATE TABLE tbl_school (id SERIAL NOT NULL, name VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, zip INT DEFAULT NULL, city VARCHAR(255) DEFAULT NULL, phone INT DEFAULT NULL, email VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE tbl_user (id SERIAL NOT NULL, grade_id INT DEFAULT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, name VARCHAR(255) DEFAULT NULL, lastname VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE tbl_user (id SERIAL NOT NULL, grade_id INT DEFAULT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, name VARCHAR(255) DEFAULT NULL, lastname VARCHAR(255) DEFAULT NULL, is_verified BOOLEAN NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_38B383A1FE19A1A8 ON tbl_user (grade_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_IDENTIFIER_EMAIL ON tbl_user (email)');
         $this->addSql('CREATE TABLE tbl_visit_report (id SERIAL NOT NULL, contained TEXT DEFAULT NULL, is_verified BOOLEAN DEFAULT NULL, PRIMARY KEY(id))');
