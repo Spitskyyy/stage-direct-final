@@ -16,9 +16,34 @@ class CompanyRepository extends ServiceEntityRepository
         parent::__construct($registry, Company::class);
     }
 
-    //    /**
-    //     * @return Company[] Returns an array of Company objects
-    //     */
+    /**
+    * @return Company[] Returns an array of Company objects
+    */
+
+    public function findAll(int $page = 1, int $limit = 10): array
+    {
+        $offset = ($page - 1) * $limit;  // Calcul de l'offset
+    
+        return $this->createQueryBuilder('c')
+            ->orderBy('c.id', 'ASC')  // Trier par ID ou tout autre champ
+            ->setFirstResult($offset)  // Définir l'offset
+            ->setMaxResults($limit)   // Limiter le nombre de résultats par page
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function searchBy($criteria): ?array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.name LIKE :val')
+            ->setParameter('val', '%' . $criteria['name'] . '%')
+            ->orderBy('c.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    
     //    public function findByExampleField($value): array
     //    {
     //        return $this->createQueryBuilder('c')
