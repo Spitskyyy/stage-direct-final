@@ -1,45 +1,94 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}School index{% endblock %}
+{% block title %}Ecole index
+{% endblock %}
 
 {% block body %}
-    <h1>School index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Zip</th>
-                <th>City</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for school in schools %}
-            <tr>
-                <td>{{ school.id }}</td>
-                <td>{{ school.name }}</td>
-                <td>{{ school.address }}</td>
-                <td>{{ school.zip }}</td>
-                <td>{{ school.city }}</td>
-                <td>{{ school.phone }}</td>
-                <td>{{ school.email }}</td>
-                <td>
-                    <a href="{{ path('app_school_show', {'id': school.id}) }}">show</a>
-                    <a href="{{ path('app_school_edit', {'id': school.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="8">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+	<br><br><br>
 
-    <a href="{{ path('app_school_new') }}">Create new</a>
+	<div class="min-h-screen flex items-center justify-center">
+		<div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
+			<div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+				<label for="table-search" class="sr-only">Search</label>
+				<div class="relative">
+					<div class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
+						<svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+							<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+						</svg>
+					</div>
+					<form action="{{ path('app_school_index') }}" method="get">
+						<input type="text" id="table-search" name="search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Rechercher des écoles" value="{{ search_term }}">
+					</form>
+				</div>
+			</div>
+
+			<table id="ecole-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+				<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+					<tr>
+						<th scope="col" class="px-6 py-3">Id</th>
+						<th scope="col" class="px-6 py-3">Nom</th>
+						<th scope="col" class="px-6 py-3">Adresse</th>
+						<th scope="col" class="px-6 py-3">Code Postal</th>
+						<th scope="col" class="px-6 py-3">Ville</th>
+						<th scope="col" class="px-6 py-3">Téléphone</th>
+						<th scope="col" class="px-6 py-3">Email</th>
+						<th scope="col" class="px-6 py-3">Actions</th>.
+					</tr>
+				</thead>
+				<tbody id="table-body">
+					{% for ecole in ecoles %}
+						<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+							<td>{{ school.id }}</td>
+							<td>{{ school.name }}</td>
+							<td>{{ school.address }}</td>
+							<td>{{ school.zip }}</td>
+							<td>{{ school.city }}</td>
+							<td>{{ school.phone }}</td>
+							<td>{{ school.email }}</td>
+							<td class="px-6 py-4">
+								<a href="{{ path('app_ecole_show', {'id': ecole.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Afficher</a>
+								<a href="{{ path('app_ecole_edit', {'id': ecole.id}) }}" class="font-medium text-blue-600 dark:text-green-500 hover:underline">Modifier</a>
+								{{ include('ecole/_delete_form.html.twig') }}
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="9" class="px-6 py-4 text-center">Aucun enregistrement trouvé</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+
+			<br>
+
+			<button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
+				<a href="{{ path('app_ecole_new') }}" class="btn btn-primary">
+					Ajouter une école
+				</a>
+			</button>
+
+			<!-- Pagination -->
+			<nav class="flex items-center justify-between pt-4" aria-label="Table navigation">
+				<span class="text-sm font-normal text-gray-500 dark:text-gray-400 block w-full md:inline md:w-auto">Affichage
+					<span class="font-semibold text-gray-900 dark:text-gray-400">{{ (current_page - 1) * 10 + 1 }}-{{ current_page * 10 }}</span>
+					sur
+					<span class="font-semibold text-gray-900 dark:text-gray-400">{{ total_records }}</span>
+				</span>
+				<ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+					<li>
+						<a href="{{ path('app_ecole_index', { 'page': current_page - 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == 1 %} disabled {% endif %}>Précédent</a>
+					</li>
+					{% for page in 1..total_pages %}
+						<li>
+							<a href="{{ path('app_ecole_index', { 'page': page, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page }}</a>
+						</li>
+					{% endfor %}
+					<li>
+						<a href="{{ path('app_ecole_index', { 'page': current_page + 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == total_pages %} disabled {% endif %}>Suivant</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
 {% endblock %}

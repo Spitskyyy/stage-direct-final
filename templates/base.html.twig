@@ -29,7 +29,7 @@
 							<a href="{{ path('app_index') }}" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Accueil</a>
 						</li>
 
-						{% if is_granted('ROLE_STUDENT') %}
+						{# {% if is_granted('ROLE_STUDENT') %} #}
 							<li>
 								<button id="dropdownEntrepriseLink" data-dropdown-toggle="dropdownEntreprise" class="flex items-center justify-between w-full py-2 px-3 text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent">Entreprise
 									<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 10 6">
@@ -76,20 +76,20 @@
 								</button>
 								<!-- Dropdown menu -->
 								<div id="dropdownRapport" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-									<ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
+									{# <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
 										<li>
 											<a href="{{ path('app_rapport_de_stage_index') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Liste des Rapports</a>
 										</li>
 										<li>
 											<a href="{{ path('app_rapport_de_stage_new') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Ajouter un Rapport</a>
 										</li>
-									</ul>
+									</ul> #}
 								</div>
 							</li>
 
-						{% endif %}
+						{# {% endif %} #}
 
-						{% if is_granted('ROLE_MODERATOR') %}
+						{# {% if is_granted('ROLE_MODERATOR') %} #}
 							<li>
 								<button id="dropdownAdminLink" data-dropdown-toggle="dropdownAdmin" class="flex items-center justify-between w-full py-2 px-3 text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent">Administration
 									<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 10 6">
@@ -132,10 +132,10 @@
 											<div id="dropdownEcole" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
 												<ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
 													<li>
-														<a href="{{ path('app_ecole_index') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Liste des écoles</a>
+														<a href="{{ path('app_school_index') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Liste des écoles</a>
 													</li>
 													<li>
-														<a href="{{ path('app_ecole_new') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Ajouter une école</a>
+														<a href="{{ path('app_school_new') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Ajouter une école</a>
 													</li>
 												</ul>
 											</div>
@@ -144,10 +144,10 @@
 											<div id="dropdownClasse" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
 												<ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
 													<li>
-														<a href="{{ path('app_classe_index') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Liste des classe</a>
+														<a href="{{ path('app_grade_index') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Liste des classe</a>
 													</li>
 													<li>
-														<a href="{{ path('app_classe_new') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Ajouter une classe</a>
+														<a href="{{ path('app_grade_new') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Ajouter une classe</a>
 													</li>
 												</ul>
 											</div>
@@ -155,7 +155,7 @@
 									</ul>
 								</div>
 							</li>
-						{% endif %}
+						{# {% endif %} #}
 
 						<li>
 							<a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Contact</a>
@@ -177,7 +177,7 @@
 												<strong>{{ app.user.firstName }}</strong>
 												<strong>{{ app.user.lastName }}</strong>
 												<br>
-												{# Tri et afficher le rôle le plus élevé #}
+												{# Tri et afficher le rôle le plus élevé
 												<strong class="text-gray-500" >Rôle :
 												{% set roles = app.user.getRoles() %}
 												{% set roleHierarchy = ['ROLE_ADMIN', 'ROLE_MODERATOR', 'ROLE_USER'] %}
@@ -193,7 +193,7 @@
 												{% if highestRole %}
 													{{ highestRole|slice(5) }}
 													{# Utilisation de slice pour enlever "ROLE_" #}
-												{% endif %}
+												{% endif %} #}
 												</strong>
 											</p>
 											<br>
