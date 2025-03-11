@@ -6,6 +6,7 @@ use App\Entity\Company;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class CompanyType extends AbstractType
 {
@@ -19,7 +20,11 @@ class CompanyType extends AbstractType
             ->add('country')
             ->add('phone')
             ->add('email')
-            ->add('is_verified')
+            ->add('isVerified', CheckboxType::class, [
+                'label' => 'Vérifier',
+                'required' => false,
+            ])
+            
         ;
     }
 
