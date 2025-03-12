@@ -32,7 +32,6 @@
 						<th scope="col" class="px-6 py-3">Id</th>
 						<th scope="col" class="px-6 py-3">Name</th>
 						<th scope="col" class="px-6 py-3">Address</th>
-						<th scope="col" class="px-6 py-3">City</th>
 						<th scope="col" class="px-6 py-3">Zip</th>
 						<th scope="col" class="px-6 py-3">City</th>
 						<th scope="col" class="px-6 py-3">Phone</th>
@@ -41,14 +40,13 @@
 					</tr>
 				</thead>
 				<tbody id="table-body">
-					{% for school in companies %}
+					{% for school in schools %}
 						<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
 							<td class="px-6 py-4">{{ school.id }}</td>
 							<td class="px-6 py-4">{{ school.name }}</td>
 							<td class="px-6 py-4">{{ school.address }}</td>
 							<td class="px-6 py-4">{{ school.zip }}</td>
 							<td class="px-6 py-4">{{ school.city }}</td>
-							<td class="px-6 py-4">{{ school.country }}</td>
 							<td class="px-6 py-4">{{ school.phone }}</td>
 							<td class="px-6 py-4">{{ school.email }}</td>
 
@@ -68,15 +66,15 @@
 
 			<br>
 
-			<button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
+			{# <button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
     			<a href="{{ path('app_school_export') }}" class="btn btn-primary">
         			Exporter en Excel
     			</a>
-			</button>
+			</button> #}
 
         	<button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
 				<a href="{{ path('app_school_new') }}" class="btn btn-primary">
-                	Ajouter une entreprise
+                	Ajouter une école
             	</a>
 			</button>
 

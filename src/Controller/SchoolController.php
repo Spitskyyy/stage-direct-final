@@ -15,10 +15,34 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SchoolController extends AbstractController
 {
     #[Route(name: 'app_school_index', methods: ['GET'])]
-    public function index(SchoolRepository $schoolRepository): Response
+    public function index(Request $request, SchoolRepository $schoolRepository): Response
     {
+        $limit = 10; // Nombre d'éléments par page
+        $page = (int) $request->query->get('page', 1); // Page actuelle, par défaut 1
+        $searchTerm = $request->query->get('search', ''); // Paramètre de recherche, par défaut ''
+
+        $criteria = [];
+        // Récupération du nombre total d'éléments (en tenant compte du filtre de recherche)
+        $totalRecords = $schoolRepository->count($criteria);
+        $totalPages = (int) ceil($totalRecords / $limit); // Nombre total de pages
+
+        if (empty($searchTerm)) {
+            // Calcul de l'offset pour la pagination
+            $offset = ($page - 1) * $limit;
+            $schools = $schoolRepository->findBy([], null, $limit, $offset);
+        } else {
+            if ($searchTerm) {
+                $criteria['name'] = $searchTerm; // Exemple de critère
+            }
+            $schools = $schoolRepository->searchBy($criteria);
+        }
+        
         return $this->render('school/index.html.twig', [
-            'schools' => $schoolRepository->findAll(),
+            'schools' => $schools,
+            'total_records' => $totalRecords,
+            'total_pages' => $totalPages,
+            'current_page' => $page,
+            'search_term' => $searchTerm, // Passer le terme de recherche au template
         ]);
     }
 
