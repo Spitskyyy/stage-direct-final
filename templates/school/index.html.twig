@@ -1,14 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ecole index
+{% block title %}school index
 {% endblock %}
 
 {% block body %}
 
-	<br><br><br>
+<br><br><br>
 
 	<div class="min-h-screen flex items-center justify-center">
-		<div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
+		<div
+			class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
+			<!-- max-w-8xl pour une largeur plus grande -->
 			<div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
 				<label for="table-search" class="sr-only">Search</label>
 				<div class="relative">
@@ -17,44 +19,48 @@
 							<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
 						</svg>
 					</div>
+					<!-- Ajoutez le paramètre 'search' à l'URL de soumission du formulaire -->
 					<form action="{{ path('app_school_index') }}" method="get">
-						<input type="text" id="table-search" name="search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Rechercher des écoles" value="{{ search_term }}">
+						<input type="text" id="table-search" name="search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Rechercher des entreprises" value="{{ search_term }}">
 					</form>
 				</div>
 			</div>
 
-			<table id="ecole-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+			<table id="school-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
 				<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 					<tr>
 						<th scope="col" class="px-6 py-3">Id</th>
-						<th scope="col" class="px-6 py-3">Nom</th>
-						<th scope="col" class="px-6 py-3">Adresse</th>
-						<th scope="col" class="px-6 py-3">Code Postal</th>
-						<th scope="col" class="px-6 py-3">Ville</th>
-						<th scope="col" class="px-6 py-3">Téléphone</th>
+						<th scope="col" class="px-6 py-3">Name</th>
+						<th scope="col" class="px-6 py-3">Address</th>
+						<th scope="col" class="px-6 py-3">City</th>
+						<th scope="col" class="px-6 py-3">Zip</th>
+						<th scope="col" class="px-6 py-3">City</th>
+						<th scope="col" class="px-6 py-3">Phone</th>
 						<th scope="col" class="px-6 py-3">Email</th>
-						<th scope="col" class="px-6 py-3">Actions</th>.
+                        <th>actions</th>
 					</tr>
 				</thead>
 				<tbody id="table-body">
-					{% for ecole in ecoles %}
+					{% for school in companies %}
 						<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-							<td>{{ school.id }}</td>
-							<td>{{ school.name }}</td>
-							<td>{{ school.address }}</td>
-							<td>{{ school.zip }}</td>
-							<td>{{ school.city }}</td>
-							<td>{{ school.phone }}</td>
-							<td>{{ school.email }}</td>
+							<td class="px-6 py-4">{{ school.id }}</td>
+							<td class="px-6 py-4">{{ school.name }}</td>
+							<td class="px-6 py-4">{{ school.address }}</td>
+							<td class="px-6 py-4">{{ school.zip }}</td>
+							<td class="px-6 py-4">{{ school.city }}</td>
+							<td class="px-6 py-4">{{ school.country }}</td>
+							<td class="px-6 py-4">{{ school.phone }}</td>
+							<td class="px-6 py-4">{{ school.email }}</td>
+
 							<td class="px-6 py-4">
-								<a href="{{ path('app_ecole_show', {'id': ecole.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Afficher</a>
-								<a href="{{ path('app_ecole_edit', {'id': ecole.id}) }}" class="font-medium text-blue-600 dark:text-green-500 hover:underline">Modifier</a>
-								{{ include('ecole/_delete_form.html.twig') }}
+								<a href="{{ path('app_school_show', {'id': school.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Show</a>
+								<a href="{{ path('app_school_edit', {'id': school.id}) }}" class="font-medium text-blue-600 dark:text-green-500 hover:underline">Edit</a>
+								{{ include('school/_delete_form.html.twig') }}
 							</td>
 						</tr>
 					{% else %}
 						<tr>
-							<td colspan="9" class="px-6 py-4 text-center">Aucun enregistrement trouvé</td>
+							<td colspan="10" class="px-6 py-4 text-center">No records found</td>
 						</tr>
 					{% endfor %}
 				</tbody>
@@ -63,32 +69,39 @@
 			<br>
 
 			<button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
-				<a href="{{ path('app_ecole_new') }}" class="btn btn-primary">
-					Ajouter une école
-				</a>
+    			<a href="{{ path('app_school_export') }}" class="btn btn-primary">
+        			Exporter en Excel
+    			</a>
+			</button>
+
+        	<button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
+				<a href="{{ path('app_school_new') }}" class="btn btn-primary">
+                	Ajouter une entreprise
+            	</a>
 			</button>
 
 			<!-- Pagination -->
 			<nav class="flex items-center justify-between pt-4" aria-label="Table navigation">
-				<span class="text-sm font-normal text-gray-500 dark:text-gray-400 block w-full md:inline md:w-auto">Affichage
+				<span class="text-sm font-normal text-gray-500 dark:text-gray-400 block w-full md:inline md:w-auto">Showing
 					<span class="font-semibold text-gray-900 dark:text-gray-400">{{ (current_page - 1) * 10 + 1 }}-{{ current_page * 10 }}</span>
-					sur
+					of
 					<span class="font-semibold text-gray-900 dark:text-gray-400">{{ total_records }}</span>
 				</span>
 				<ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
 					<li>
-						<a href="{{ path('app_ecole_index', { 'page': current_page - 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == 1 %} disabled {% endif %}>Précédent</a>
+						<a href="{{ path('app_school_index', { 'page': current_page - 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == 1 %} disabled {% endif %}>Previous</a>
 					</li>
 					{% for page in 1..total_pages %}
 						<li>
-							<a href="{{ path('app_ecole_index', { 'page': page, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page }}</a>
+							<a href="{{ path('app_school_index', { 'page': page, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page }}</a>
 						</li>
 					{% endfor %}
 					<li>
-						<a href="{{ path('app_ecole_index', { 'page': current_page + 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == total_pages %} disabled {% endif %}>Suivant</a>
+						<a href="{{ path('app_school_index', { 'page': current_page + 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == total_pages %} disabled {% endif %}>Next</a>
 					</li>
 				</ul>
 			</nav>
 		</div>
 	</div>
 {% endblock %}
+            
