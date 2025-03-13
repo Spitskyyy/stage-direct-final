@@ -190,9 +190,9 @@
 												{% endfor %}
 
 												{# Affichage du rôle le plus élevé trouvé sans le préfixe "ROLE_" #}
-												{% if highestRole %}
+												{# {% if highestRole %}
 													{{ highestRole|slice(5) }}
-													{# Utilisation de slice pour enlever "ROLE_" #}
+													{# Utilisation de slice pour enlever "ROLE_"
 												{% endif %} #}
 												</strong>
 											</p>

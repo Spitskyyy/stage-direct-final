@@ -43,6 +43,9 @@ class Internship
     #[ORM\OneToOne(inversedBy: 'internship', cascade: ['persist', 'remove'])]
     private ?ActivityList $activitylist = null;
 
+    #[ORM\ManyToOne(inversedBy: 'internships')]
+    private ?Speciality $Speciality = null;
+
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     public function getId(): ?int
     {
@@ -153,6 +156,18 @@ class Internship
     public function setActivitylist(?ActivityList $activitylist): static
     {
         $this->activitylist = $activitylist;
+
+        return $this;
+    }
+
+    public function getSpeciality(): ?Speciality
+    {
+        return $this->Speciality;
+    }
+
+    public function setSpeciality(?Speciality $Speciality): static
+    {
+        $this->Speciality = $Speciality;
 
         return $this;
     }

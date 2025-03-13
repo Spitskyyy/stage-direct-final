@@ -3,11 +3,14 @@
 namespace App\Form;
 
 use App\Entity\Grade;
+use App\Entity\speciality;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+
 
 class UserType extends AbstractType
 {
@@ -16,13 +19,27 @@ class UserType extends AbstractType
         $builder
             ->add('email')
             // ->add('roles')
-            ->add('password')
-            ->add('name')
-            ->add('lastname')
+            ->add('firstname')
+            ->add(child: 'lastname')
+            ->add('roles', ChoiceType::class, [
+                'choices' => [
+                    'Utilisateur' => 'ROLE_USER',
+                    'Admin' => 'ROLE_ADMIN',
+                ],
+                'multiple' => true,
+                'expanded' => true, // Affiche sous forme de cases à cocher
+                'label' => 'Rôles',
+            ])            
             ->add('grade', EntityType::class, [
                 'class' => Grade::class,
                 'choice_label' => 'id',
             ])
+            ->add('speciality', EntityType::class, [
+                'class' => Speciality::class,
+                'choice_label' => 'id',
+            ])
+            ->add('isVerified');
+
         ;
     }
 
