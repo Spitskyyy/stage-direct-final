@@ -14,11 +14,40 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/speciality')]
 final class SpecialityController extends AbstractController
 {
+
     #[Route(name: 'app_speciality_index', methods: ['GET'])]
-    public function index(SpecialityRepository $specialityRepository): Response
+    public function index(Request $request, SpecialityRepository $specialityRepository): Response
     {
+        //return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+        $limit = 10; // Nombre d'éléments par page
+        $page = (int) $request->query->get('page', 1); // Page actuelle, par défaut 1
+        $searchTerm = $request->query->get('search', ''); // Paramètre de recherche, par défaut ''
+
+        $criteria = [];
+        // Récupération du nombre total d'éléments (en tenant compte du filtre de recherche)
+        $totalRecords = $specialityRepository->count($criteria);
+        $totalPages = (int) ceil($totalRecords / $limit); // Nombre total de pages
+
+        if (empty($searchTerm)) {
+            // Pas de recherche, on affiche tout
+            $specialities = $specialityRepository->findAll($page);
+        } else {
+            // Constructeur de la requête avec recherche
+
+            if ($searchTerm) {
+                $criteria['name'] = $searchTerm; // Par exemple, rechercher par nom
+            }
+
+            // Récupération des utilisateurs pour la page actuelle, en tenant compte de la recherche
+            $specialities = $specialityRepository->searchBy($criteria);
+        }
+
         return $this->render('speciality/index.html.twig', [
-            'specialities' => $specialityRepository->findAll(),
+            'specialities' => $specialities,
+            'total_records' => $totalRecords,
+            'total_pages' => $totalPages,
+            'current_page' => $page,
+            'search_term' => $searchTerm, // Passer le terme de recherche au template
         ]);
     }
 
