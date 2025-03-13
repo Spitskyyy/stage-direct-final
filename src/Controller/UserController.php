@@ -15,31 +15,45 @@ use Symfony\Component\Routing\Attribute\Route;
 final class UserController extends AbstractController
 {
     #[Route(name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function index(Request $request, UserRepository $userRepository): Response
     {
+        //return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
+        $limit = 10; // Nombre d'éléments par page
+        $page = (int) $request->query->get('page', 1); // Page actuelle, par défaut 1
+        $searchTerm = $request->query->get('search', ''); // Paramètre de recherche, par défaut ''
+
+        $criteria = [];
+        // Récupération du nombre total d'éléments (en tenant compte du filtre de recherche)
+        $totalRecords = $userRepository->count($criteria);
+        $totalPages = (int) ceil($totalRecords / $limit); // Nombre total de pages
+
+        if (empty($searchTerm)) {
+            // Pas de recherche, on affiche tout
+            $users = $userRepository->findAll($page);
+        } else {
+            // Constructeur de la requête avec recherche
+
+            if ($searchTerm) {
+                $criteria['name'] = $searchTerm; // Par exemple, rechercher par nom
+            }
+
+            // Récupération des utilisateurs pour la page actuelle, en tenant compte de la recherche
+            $users = $userRepository->searchBy($criteria);
+        }
+
         return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $users,
+            'total_records' => $totalRecords,
+            'total_pages' => $totalPages,
+            'current_page' => $page,
+            'search_term' => $searchTerm, // Passer le terme de recherche au template
         ]);
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('user/new.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
+        return $this->redirectToRoute('app_register');
     }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]

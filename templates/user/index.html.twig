@@ -3,41 +3,87 @@
 {% block title %}User index{% endblock %}
 
 {% block body %}
-    <h1>User index</h1>
+<br><br><br>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Email</th>
-                <th>Roles</th>
-                <th>Password</th>
-                <th>Name</th>
-                <th>Lastname</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-                <td>{{ user.password }}</td>
-                <td>{{ user.name }}</td>
-                <td>{{ user.lastname }}</td>
-                <td>
-                    <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div class="min-h-screen flex items-center justify-center">
+    <div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
+        <!-- max-w-8xl pour une largeur plus grande -->
+        <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+            <label for="table-search" class="sr-only">Search</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <form action="{{ path('app_user_index') }}" method="get">
+                    <input type="text" id="table-search" name="search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Users" value="{{ search_term }}">
+                </form>
+            </div>
+        </div>
 
-    <a href="{{ path('app_user_new') }}">Create new</a>
+        <table id="user-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Id</th>
+                    <th scope="col" class="px-6 py-3">Email</th>
+                    <th scope="col" class="px-6 py-3">Roles</th>
+                    <th scope="col" class="px-6 py-3">Firstname</th>
+                    <th scope="col" class="px-6 py-3">Lastname</th>
+                    <th scope="col" class="px-6 py-3">Classe</th>
+                    <th scope="col" class="px-6 py-3">Spécialité</th>
+                    <th scope="col" class="px-6 py-3">IsVerified</th>
+                    <th scope="col" class="px-6 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <td class="px-6 py-4">{{ user.id }}</td>
+                        <td class="px-6 py-4">{{ user.email }}</td>
+                        <td class="px-6 py-4">{{ user.roles ? user.roles|json_encode : '' }}</td>
+                        <td class="px-6 py-4">{{ user.firstname }}</td>
+                        <td class="px-6 py-4">{{ user.lastname }}</td>
+                        <td class="px-6 py-4">{{ user.grade }}</td>
+                        <td class="px-6 py-4">{{ user.speciality }}</td>
+                        <td class="px-6 py-4">{{ user.isVerified ? 'Yes' : 'No' }}</td>
+                        <td class="px-6 py-4">
+                            <a href="{{ path('app_user_show', {'id': user.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Show</a>
+                            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="font-medium text-blue-600 dark:text-green-500 hover:underline">Edit</a>
+                            {{ include('user/_delete_form.html.twig') }}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-4 text-center">No records found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+
+        <!-- Pagination -->
+        <nav class="flex items-center justify-between pt-4" aria-label="Table navigation">
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400 block w-full md:inline md:w-auto">Showing
+                <span class="font-semibold text-gray-900 dark:text-gray-400">{{ (current_page - 1) * 10 + 1 }}-{{ current_page * 10 }}</span>
+                of
+                <span class="font-semibold text-gray-900 dark:text-gray-400">{{ total_records }}</span>
+            </span>
+            <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+                <li>
+                    <a href="{{ path('app_user_index', { 'page': current_page - 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == 1 %} disabled {% endif %}>Previous</a>
+                </li>
+                {% for page in 1..total_pages %}
+                    <li>
+                        <a href="{{ path('app_user_index', { 'page': page, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page }}</a>
+                    </li>
+                {% endfor %}
+                <li>
+                    <a href="{{ path('app_user_index', { 'page': current_page + 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == total_pages %} disabled {% endif %}>Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
 {% endblock %}
