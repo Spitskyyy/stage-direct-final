@@ -9,7 +9,6 @@
 
         <dl class="space-y-5 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
             {% for label, value in {
-                'ID': internship.id,
                 'Titre': internship.title,
                 'Date de début': internship.startDate|date('d/m/Y'),
                 'Date de fin': internship.endDate|date('d/m/Y'),
