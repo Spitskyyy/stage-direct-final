@@ -181,4 +181,14 @@ class Company
 
         return $this;
     }
+
+    public function __toString(): string 
+    {
+        if (isset($this->name)) {
+            return $this->getName();
+        } else {
+            return "inconnu";
+        }
+    }
+
 }

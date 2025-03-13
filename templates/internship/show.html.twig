@@ -1,38 +1,45 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Internship{% endblock %}
+{% block title %}Détails du Stage{% endblock %}
 
 {% block body %}
-    <h1>Internship</h1>
+<div class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div class="w-full max-w-md p-6 bg-white border border-gray-200 rounded-xl shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl dark:bg-gray-800 dark:border-gray-700">
+        <h5 class="text-2xl font-semibold text-gray-900 dark:text-white text-center mb-6">Détails du Stage</h5>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ internship.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ internship.title }}</td>
-            </tr>
-            <tr>
-                <th>Start_date</th>
-                <td>{{ internship.startDate ? internship.startDate|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>End_date</th>
-                <td>{{ internship.endDate ? internship.endDate|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Is_verified</th>
-                <td>{{ internship.isVerified ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <dl class="space-y-5 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            {% for label, value in {
+                'Titre': internship.title,
+                'Date de début': internship.startDate|date('d/m/Y'),
+                'Date de fin': internship.endDate|date('d/m/Y'),
+                'Vérifié': internship.isVerified ? 'Oui' : 'Non',
+                'Stagiaire': internship.intern, 
+                'École': internship.school,
+                'Entreprise': internship.company,
+                'Rapport de visite': internship.id,
+                'Liste d\'activités': internship.id
+            } %}
+                <div class="flex justify-between border-b border-gray-300 pb-2 dark:border-gray-600">
+                    <dt class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ label }}</dt>
+                    <dd class="text-sm text-gray-900 dark:text-white font-semibold">{{ value }}</dd>
+                </div>
+            {% endfor %}
+        </dl>
 
-    <a href="{{ path('app_internship_index') }}">back to list</a>
+        <div class="mt-6 flex justify-between">
+            <a href="{{ path('app_internship_index') }}" 
+                class="text-sm font-medium text-blue-700 hover:underline transition duration-200 dark:text-blue-500">
+                ← Retour à la liste
+            </a>
+            <a href="{{ path('app_internship_edit', {'id': internship.id}) }}" 
+                class="px-4 py-2 bg-blue-700 text-white rounded-lg shadow-md hover:bg-blue-800 transition duration-300 dark:bg-blue-600 dark:hover:bg-blue-700">
+                Modifier
+            </a>
+        </div>
 
-    <a href="{{ path('app_internship_edit', {'id': internship.id}) }}">edit</a>
-
-    {{ include('internship/_delete_form.html.twig') }}
+        <div class="mt-6">
+            {{ include('internship/_delete_form.html.twig') }}
+        </div>
+    </div>
+</div>
 {% endblock %}
