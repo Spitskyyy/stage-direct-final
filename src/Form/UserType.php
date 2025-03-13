@@ -32,11 +32,11 @@ class UserType extends AbstractType
             ])            
             ->add('grade', EntityType::class, [
                 'class' => Grade::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
             ->add('speciality', EntityType::class, [
                 'class' => Speciality::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
             ->add('isVerified');
 
