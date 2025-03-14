@@ -1,11 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New ActivityList{% endblock %}
+{% block title %}New ActivityList
+{% endblock %}
 
 {% block body %}
-    <h1>Create new ActivityList</h1>
+	<h1>Create new ActivityList</h1>
 
-    {{ include('activity_list/_form.html.twig') }}
+	<script>
+		tinymce.init({selector: '.tinymce', plugins: 'advlist autolink lists link image charmap print preview anchor', toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat', height: 300});
+	</script>
 
-    <a href="{{ path('app_activity_list_index') }}">back to list</a>
+
+	{{ include('activity_list/_form.html.twig') }}
+
+	<a href="{{ path('app_activity_list_index') }}">back to list</a>
 {% endblock %}
