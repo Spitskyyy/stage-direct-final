@@ -21,9 +21,11 @@ class InternshipType extends AbstractType
             ->add('title')
             ->add('start_date', null, [
                 'widget' => 'single_text',
+                'label' => 'Date de début'
             ])
             ->add('end_date', null, [
                 'widget' => 'single_text',
+                'label' => 'Date de fin'
             ])
             ->add('is_verified')
             ->add('intern', EntityType::class, [

@@ -215,6 +215,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
     public function getSpeciality(): ?Speciality
     {
         return $this->Speciality;
@@ -226,4 +227,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function __toString(): string 
+    {
+        if (isset($this->firstname)) {
+            return $this->getFirstName() . " " . $this->getLastname();
+        } else {
+            return "inconnu";
+        }
+    }
+
+
 }
