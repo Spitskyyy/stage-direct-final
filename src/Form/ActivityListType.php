@@ -8,18 +8,16 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use EmilePerron\TinymceBundle\Form\Type\TinymceType;
 
 class ActivityListType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
 
-
         $builder
-            ->add('contained', TextareaType::class, [
-                'attr' => ['class' => 'tinymce'],
-            ])
+            ->add('contained', TinymceType::class, []
+            )
             ->add('is_verified')
             ->add('internship', EntityType::class, [
                 'class' => Internship::class,
