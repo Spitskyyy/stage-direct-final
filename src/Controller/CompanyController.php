@@ -34,14 +34,17 @@ final class CompanyController extends AbstractController
             if ($searchField == 'zip') {
                 // Utiliser une requête SQL natif pour le champ zip
                 $queryBuilder
-                    ->where("CAST(c.$searchField AS string) LIKE :searchTerm")
-                    ->setParameter('searchTerm', '%' . $searchTerm . '%');
+                    ->where("c." . $searchField ." LIKE :searchTerm")
+                    ->setParameter('searchTerm', '%' . strval($searchTerm) . '%');
             } else {
                 $queryBuilder
                     ->where("c.$searchField LIKE :searchTerm")
                     ->setParameter('searchTerm', '%' . $searchTerm . '%');
             }
         }
+
+        dump($searchTerm);
+        dump($queryBuilder->getQuery()->getSQL());
 
         $companies = $queryBuilder->getQuery()->getResult();
 
