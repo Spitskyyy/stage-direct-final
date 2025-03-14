@@ -1,13 +1,99 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Internship{% endblock %}
+{% block title %}Modifier le Stage{% endblock %}
 
 {% block body %}
-    <h1>Edit Internship</h1>
+<div class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div class="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-md sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <h5 class="text-2xl font-semibold text-gray-900 dark:text-white text-center mb-6">Modifier le Stage</h5>
 
-    {{ include('internship/_form.html.twig', {'button_label': 'Update'}) }}
+        {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
 
-    <a href="{{ path('app_internship_index') }}">back to list</a>
+            <div>
+                <label for="{{ form.title.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Titre</label>
+                {{ form_widget(form.title, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.title) }}
+            </div>
 
-    {{ include('internship/_delete_form.html.twig') }}
+            <div>
+                <label for="{{ form.start_date.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date de début</label>
+                {{ form_widget(form.start_date, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.start_date) }}
+            </div>
+
+            <div>
+                <label for="{{ form.end_date.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date de fin</label>
+                {{ form_widget(form.end_date, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.end_date) }}
+            </div>
+
+            <div>
+                <label for="{{ form.intern.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Stagiaire</label>
+                {{ form_widget(form.intern, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.intern) }}
+            </div>
+
+            <div>
+                <label for="{{ form.school.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">École</label>
+                {{ form_widget(form.school, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.school) }}
+            </div>
+
+            <div>
+                <label for="{{ form.company.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Entreprise</label>
+                {{ form_widget(form.company, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.company) }}
+            </div>
+
+            <div>
+                <label for="{{ form.visitreport.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rapport de visite</label>
+                {{ form_widget(form.visitreport, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.visitreport) }}
+            </div>
+
+            <div>
+                <label for="{{ form.activitylist.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Liste d'activités</label>
+                {{ form_widget(form.activitylist, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.activitylist) }}
+            </div>
+
+            <div>
+                <label for="{{ form.is_verified.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Vérifié</label>
+                {{ form_widget(form.is_verified) }}
+                {{ form_errors(form.is_verified) }}
+            </div>
+
+            <button type="submit" 
+                class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Mettre à jour
+            </button>
+        {{ form_end(form) }}
+
+        <div class="mt-6 flex justify-between">
+            <a href="{{ path('app_internship_index') }}" 
+                class="text-sm font-medium text-blue-700 hover:underline dark:text-blue-500">
+                Retour à la liste
+            </a>
+            <div>
+                {{ include('internship/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
