@@ -72,10 +72,14 @@ final class SpecialityController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_speciality_show', methods: ['GET'])]
-    public function show(Speciality $speciality): Response
+    public function show(Request $request, Speciality $speciality): Response
     {
+        $form = $this->createForm(SpecialityType::class, $speciality);
+        $form->handleRequest($request);
+
         return $this->render('speciality/show.html.twig', [
             'speciality' => $speciality,
+            'form' => $form,
         ]);
     }
 

@@ -1,11 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Speciality{% endblock %}
+{% block title %}Création spécialité{% endblock %}
 
 {% block body %}
-    <h1>Create new Speciality</h1>
+<div class="flex items-center justify-center min-h-screen bg-gray-100 light:bg-gray-900">
+    <div class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 dark:bg-gray-800 dark:border-gray-700">
+        <h5 class="text-xl font-medium text-gray-900 dark:text-white text-center mb-4">Créer une nouvelle spécialité </h5>
 
-    {{ include('speciality/_form.html.twig') }}
+        {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+            <div>
+                <label for="{{ form.name.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    {{ form.name.vars.label }}
+                    Nom de la spécialité
+                </label>
+                {{ form_widget(form.name, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.name) }}
+            </div>
 
-    <a href="{{ path('app_speciality_index') }}">back to list</a>
+            <button type="submit" 
+                class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Créer
+            </button>
+
+            <div class="text-sm font-medium text-gray-500 dark:text-gray-300 text-center">
+                <a href="{{ path('app_speciality_index') }}" class="text-blue-700 hover:underline dark:text-blue-500">
+                    Retour à la liste
+                </a>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
 {% endblock %}
