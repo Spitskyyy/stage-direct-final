@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 // use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -21,38 +22,33 @@ final class CompanyController extends AbstractController
 {
     #[Route(name: 'app_company_index', methods: ['GET'])]
     // #[IsGranted('ROLE_STUDENT')]
-    public function index(Request $request, CompanyRepository $companyRepository): Response
+    public function index(Request $request, EntityManagerInterface $entityManager)
     {
-        $limit = 10; // Nombre d'éléments par page
-        $page = (int) $request->query->get('page', 1); // Page actuelle, par défaut 1
-        $searchTerm = $request->query->get('search', ''); // Paramètre de recherche, par défaut ''
+        $searchTerm = $request->query->get('search');
+        $searchField = $request->query->get('search_field', 'name'); // Par défaut, on recherche par "name"
 
-        $criteria = [];
-        // Récupération du nombre total d'éléments (en tenant compte du filtre de recherche)
-        $totalRecords = $companyRepository->count($criteria);
-        $totalPages = (int) ceil($totalRecords / $limit); // Nombre total de pages
+        $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c');
 
-        if (empty($searchTerm)) {
-            // Pas de recherche, on affiche tout
-            $companies = $companyRepository->findAll($page);
-        } else {
-            // Constructeur de la requête avec recherche
-
-            if ($searchTerm) {
-                $criteria['name'] = $searchTerm; // Par exemple, rechercher par nom
+        if ($searchTerm) {
+            // Si le champ de recherche est 'zip', on effectue une recherche en tant que texte
+            if ($searchField == 'zip') {
+                // Utiliser une requête SQL natif pour le champ zip
+                $queryBuilder
+                    ->where("CAST(c.$searchField AS string) LIKE :searchTerm")
+                    ->setParameter('searchTerm', '%' . $searchTerm . '%');
+            } else {
+                $queryBuilder
+                    ->where("c.$searchField LIKE :searchTerm")
+                    ->setParameter('searchTerm', '%' . $searchTerm . '%');
             }
-
-            // Récupération des entreprises pour la page actuelle, en tenant compte de la recherche
-            // $companies = $companyRepository->findBy($criteria, null, $limit, ($page - 1) * $limit);
-            $companies = $companyRepository->searchBy($criteria);
         }
+
+        $companies = $queryBuilder->getQuery()->getResult();
 
         return $this->render('company/index.html.twig', [
             'companies' => $companies,
-            'total_records' => $totalRecords,
-            'total_pages' => $totalPages,
-            'current_page' => $page,
-            'search_term' => $searchTerm, // Passer le terme de recherche au template
+            'search_term' => $searchTerm,
+            'search_field' => $searchField,
         ]);
     }
 
