@@ -8,7 +8,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+                <th>title</th>
                 <th>Contained</th>
                 <th>Is_verified</th>
                 <th>actions</th>
@@ -17,7 +17,7 @@
         <tbody>
         {% for activity_list in activity_lists %}
             <tr>
-                <td>{{ activity_list.id }}</td>
+                <td>{{ activity_list.title }}</td>
                 <td>{{ activity_list.contained }}</td>
                 <td>{{ activity_list.isVerified ? 'Yes' : 'No' }}</td>
                 <td>

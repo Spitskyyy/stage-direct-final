@@ -1,11 +1,62 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New VisitReport{% endblock %}
+{% block title %}Créer une nouvelle liste d'activités{% endblock %}
 
 {% block body %}
-    <h1>Create new VisitReport</h1>
+<div class="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div class="w-full max-w-4xl p-6 bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700">
+        <h5 class="text-2xl font-semibold text-gray-900 dark:text-white text-center mb-6">
+            Nouvelle Liste d'Activités
+        </h5>
 
-    {{ include('visit_report/_form.html.twig') }}
+        <script src="{{ asset('tinymce/js/tinymce/tinymce.min.js') }}" referrerpolicy="origin"></script>
+        <script>
+            tinymce.init({
+                selector: 'textarea.tinymce',
+                license_key: 'gpl',
+                plugins: 'fullscreen lists link image preview',
+                toolbar: 'fullscreen | undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+                menubar: false,
+                height: '80vh', // Prend 80% de la hauteur de l'écran
+                resize: false, // Empêche le redimensionnement manuel
+                branding: false // Supprime le logo TinyMCE
+            });
+        </script>
 
-    <a href="{{ path('app_visit_report_index') }}">back to list</a>
+        {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+
+            <div>
+                <label for="{{ form.contained.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contenu</label>
+                {{ form_widget(form.contained, {'attr': {'class': 'tinymce w-full'}}) }}
+                {{ form_errors(form.contained) }}
+            </div>
+
+            <div class="flex items-center">
+                {{ form_widget(form.is_verified, {'attr': {'class': 'mr-2'}}) }}
+                <label for="{{ form.is_verified.vars.id }}" class="text-sm font-medium text-gray-900 dark:text-white">Vérifié</label>
+                {{ form_errors(form.is_verified) }}
+            </div>
+
+            <div>
+                <label for="{{ form.internship.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Stage</label>
+                {{ form_widget(form.internship, {'attr': {
+                    'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                }}) }}
+                {{ form_errors(form.internship) }}
+            </div>
+
+            <button type="submit" 
+                class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Créer
+            </button>
+        {{ form_end(form) }}
+
+        <div class="mt-6 text-center">
+            <a href="{{ path('app_visit_report_index') }}" 
+                class="text-sm font-medium text-blue-700 hover:underline dark:text-blue-500">
+                Retour à la liste
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}
