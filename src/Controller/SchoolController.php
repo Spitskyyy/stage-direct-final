@@ -7,6 +7,7 @@ use App\Form\SchoolType;
 use App\Repository\SchoolRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,6 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SchoolController extends AbstractController
 {
     #[Route(name: 'app_school_index', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(Request $request, SchoolRepository $schoolRepository): Response
     {
         $limit = 10; // Nombre d'éléments par page
@@ -47,6 +49,7 @@ final class SchoolController extends AbstractController
     }
 
     #[Route('/new', name: 'app_school_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $school = new School();
@@ -67,6 +70,7 @@ final class SchoolController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_school_show', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function show(School $school): Response
     {
         return $this->render('school/show.html.twig', [
@@ -75,6 +79,7 @@ final class SchoolController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_school_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, School $school, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(SchoolType::class, $school);
@@ -93,6 +98,7 @@ final class SchoolController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_school_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, School $school, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$school->getId(), $request->getPayload()->getString('_token'))) {

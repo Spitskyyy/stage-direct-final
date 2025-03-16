@@ -7,6 +7,7 @@ use App\Form\CompanyType;
 use App\Repository\CompanyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -20,6 +21,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 final class CompanyController extends AbstractController
 {
     #[Route(name: 'app_company_index', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     // #[IsGranted('ROLE_STUDENT')]
     public function index(Request $request, CompanyRepository $companyRepository): Response
     {
@@ -58,6 +60,7 @@ final class CompanyController extends AbstractController
 
 
     #[Route('/new', name: 'app_company_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
     // #[IsGranted('ROLE_STUDENT')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -79,6 +82,7 @@ final class CompanyController extends AbstractController
     }
 
     #[Route('/company/{id}', name: 'app_company_show', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     // #[IsGranted('ROLE_STUDENT')]
     public function show(Company $company): Response
     {
@@ -107,6 +111,7 @@ final class CompanyController extends AbstractController
     }
 
     #[Route(path: '/company/{id}', name: 'app_company_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
     // #[IsGranted('ROLE_STUDENT')]
     public function delete(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
@@ -119,6 +124,7 @@ final class CompanyController extends AbstractController
     }
 
     #[Route('/export', name: 'app_company_export', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     // #[IsGranted('ROLE_STUDENT')]
     public function exportToExcel(CompanyRepository $companyRepository): StreamedResponse
     {

@@ -7,6 +7,7 @@ use App\Form\VisitReportType;
 use App\Repository\VisitReportRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,6 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 final class VisitReportController extends AbstractController
 {
     #[Route(name: 'app_visit_report_index', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+
     public function index(VisitReportRepository $visitReportRepository): Response
     {
         return $this->render('visit_report/index.html.twig', [
@@ -23,6 +26,8 @@ final class VisitReportController extends AbstractController
     }
 
     #[Route('/new', name: 'app_visit_report_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $visitReport = new VisitReport();
@@ -43,6 +48,8 @@ final class VisitReportController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_visit_report_show', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+
     public function show(VisitReport $visitReport): Response
     {
         return $this->render('visit_report/show.html.twig', [
@@ -51,6 +58,8 @@ final class VisitReportController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_visit_report_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+
     public function edit(Request $request, VisitReport $visitReport, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(VisitReportType::class, $visitReport);
@@ -69,6 +78,8 @@ final class VisitReportController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_visit_report_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+
     public function delete(Request $request, VisitReport $visitReport, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$visitReport->getId(), $request->getPayload()->getString('_token'))) {

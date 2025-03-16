@@ -7,6 +7,7 @@ use App\Form\ActivityListType;
 use App\Repository\ActivityListRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,6 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ActivityListController extends AbstractController
 {
     #[Route(name: 'app_activity_list_index', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     public function index(ActivityListRepository $activityListRepository): Response
     {
         return $this->render('activity_list/index.html.twig', [
@@ -43,6 +45,8 @@ final class ActivityListController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_activity_list_show', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+
     public function show(ActivityList $activityList): Response
     {
         return $this->render('activity_list/show.html.twig', [
@@ -51,6 +55,8 @@ final class ActivityListController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_activity_list_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+
     public function edit(Request $request, ActivityList $activityList, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ActivityListType::class, $activityList);
@@ -69,6 +75,8 @@ final class ActivityListController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_activity_list_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+
     public function delete(Request $request, ActivityList $activityList, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$activityList->getId(), $request->getPayload()->getString('_token'))) {

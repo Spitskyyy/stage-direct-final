@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\User;
@@ -7,6 +6,7 @@ use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,17 +15,18 @@ use Symfony\Component\Routing\Attribute\Route;
 final class UserController extends AbstractController
 {
     #[Route(name: 'app_user_index', methods: ['GET'])]
+    #[IsGranted('ROLE_MODERATOR')]
     public function index(Request $request, UserRepository $userRepository): Response
     {
         //return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
-        $limit = 10; // Nombre d'éléments par page
-        $page = (int) $request->query->get('page', 1); // Page actuelle, par défaut 1
-        $searchTerm = $request->query->get('search', ''); // Paramètre de recherche, par défaut ''
+        $limit      = 10;// Nombre d'éléments par page
+        $page       = (int) $request->query->get('page', 1); // Page actuelle, par défaut 1
+        $searchTerm = $request->query->get('search', '');    // Paramètre de recherche, par défaut ''
 
         $criteria = [];
         // Récupération du nombre total d'éléments (en tenant compte du filtre de recherche)
         $totalRecords = $userRepository->count($criteria);
-        $totalPages = (int) ceil($totalRecords / $limit); // Nombre total de pages
+        $totalPages   = (int) ceil($totalRecords / $limit); // Nombre total de pages
 
         if (empty($searchTerm)) {
             // Pas de recherche, on affiche tout
@@ -42,16 +43,17 @@ final class UserController extends AbstractController
         }
 
         return $this->render('user/index.html.twig', [
-            'users' => $users,
+            'users'         => $users,
             'total_records' => $totalRecords,
-            'total_pages' => $totalPages,
-            'current_page' => $page,
-            'search_term' => $searchTerm, // Passer le terme de recherche au template
+            'total_pages'   => $totalPages,
+            'current_page'  => $page,
+            'search_term'   => $searchTerm, // Passer le terme de recherche au template
         ]);
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[IsGranted('ROLE_MODERATOR')]
+    public function new (Request $request, EntityManagerInterface $entityManager): Response
     {
         return $this->redirectToRoute('app_register');
     }
@@ -65,6 +67,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_MODERATOR')]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(UserType::class, $user);
@@ -83,9 +86,10 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_MODERATOR')]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($user);
             $entityManager->flush();
         }

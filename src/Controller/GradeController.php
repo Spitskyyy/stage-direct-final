@@ -7,6 +7,7 @@ use App\Form\GradeType;
 use App\Repository\GradeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,6 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class GradeController extends AbstractController
 {
     #[Route(name: 'app_grade_index', methods: ['GET'])]
+    #[IsGranted('ROLE_STUDENT')]
     public function index(Request $request, GradeRepository $gradeRepository): Response
     {
         $limit = 10; // Nombre d'éléments par page
@@ -48,6 +50,7 @@ final class GradeController extends AbstractController
     }
 
     #[Route('/new', name: 'app_grade_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_STUDENT')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $grade = new Grade();
@@ -68,6 +71,7 @@ final class GradeController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_grade_show', methods: ['GET'])]
+    #[IsGranted('ROLE_STUDENT')]
     public function show(Grade $grade): Response
     {
         return $this->render('grade/show.html.twig', [
@@ -76,6 +80,7 @@ final class GradeController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_grade_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_STUDENT')]
     public function edit(Request $request, Grade $grade, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(GradeType::class, $grade);
@@ -94,6 +99,7 @@ final class GradeController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_grade_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_STUDENT')]
     public function delete(Request $request, Grade $grade, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$grade->getId(), $request->getPayload()->getString('_token'))) {

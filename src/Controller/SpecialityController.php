@@ -7,6 +7,7 @@ use App\Form\SpecialityType;
 use App\Repository\SpecialityRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,6 +17,7 @@ final class SpecialityController extends AbstractController
 {
 
     #[Route(name: 'app_speciality_index', methods: ['GET'])]
+    #[IsGranted('ROLE_TEACHER')]
     public function index(Request $request, SpecialityRepository $specialityRepository): Response
     {
         //return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
@@ -52,6 +54,7 @@ final class SpecialityController extends AbstractController
     }
 
     #[Route('/new', name: 'app_speciality_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_TEACHER')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $speciality = new Speciality();
@@ -72,6 +75,7 @@ final class SpecialityController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_speciality_show', methods: ['GET'])]
+    #[IsGranted('ROLE_TEACHER')]
     public function show(Request $request, Speciality $speciality): Response
     {
         $form = $this->createForm(SpecialityType::class, $speciality);
@@ -84,6 +88,7 @@ final class SpecialityController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_speciality_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_TEACHER')]
     public function edit(Request $request, Speciality $speciality, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(SpecialityType::class, $speciality);
@@ -102,6 +107,7 @@ final class SpecialityController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_speciality_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_TEACHER')]
     public function delete(Request $request, Speciality $speciality, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$speciality->getId(), $request->getPayload()->getString('_token'))) {
