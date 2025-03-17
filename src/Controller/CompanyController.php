@@ -26,27 +26,33 @@ final class CompanyController extends AbstractController
     // #[IsGranted('ROLE_STUDENT')]
     public function index(Request $request, EntityManagerInterface $entityManager)
     {
-        $searchTerm = $request->query->get('search');
-        $searchField = $request->query->get('search_field', 'name'); // Par défaut, on recherche par "name"
-
         $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c');
 
-        if ($searchTerm) {
-            // Si le champ de recherche est 'zip', on effectue une recherche en tant que texte
-            $queryBuilder
-                ->where("c.$searchField LIKE :searchTerm")
-                ->setParameter('searchTerm', '%' . $searchTerm . '%');
+        for ($i = 1; $i <= 3; $i++) {
+            $search = $request->query->get('search' . $i);
+            $searchField = $request->query->get('search_field' . $i);
+
+            if ($search && $searchField) {
+                // Construction dynamique du filtre
+                $queryBuilder
+                    ->andWhere("c.$searchField LIKE :search$i")
+                    ->setParameter("search$i", '%' . $search . '%');
+            }
         }
 
-        dump($searchTerm);
+        // Debug de la requête générée
         dump($queryBuilder->getQuery()->getSQL());
 
         $companies = $queryBuilder->getQuery()->getResult();
 
         return $this->render('company/index.html.twig', [
             'companies' => $companies,
-            'search_term' => $searchTerm,
-            'search_field' => $searchField,
+            'search1' => $request->query->get('search1'),
+            'search2' => $request->query->get('search2'),
+            'search3' => $request->query->get('search3'),
+            'search_field1' => $request->query->get('search_field1'),
+            'search_field2' => $request->query->get('search_field2'),
+            'search_field3' => $request->query->get('search_field3'),
         ]);
     }
 
