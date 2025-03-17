@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stages en attente de validation{% endblock %}
+
+{% block body %}
+    <h1>Stages en attente de validation</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for internship in internships %}
+                <tr>
+                    <td>{{ internship.id }}</td>
+                    <td>{{ internship.title }}</td>
+                    <td>{{ internship.startDate ? internship.startDate|date('Y-m-d') : 'N/A' }}</td>
+                    <td>{{ internship.endDate ? internship.endDate|date('Y-m-d') : 'N/A' }}</td>
+                    <td>
+                        <a href="{{ path('internship_verify', {'id': internship.id}) }}" class="btn btn-success">Valider</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucun stage en attente.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

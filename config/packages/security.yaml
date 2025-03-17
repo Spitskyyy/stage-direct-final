@@ -41,12 +41,13 @@ when@test:
     security:
     
     role_hierarchy:
-    ROLE_USER: [ROLE_USER]
-    ROLE_STUDENT: [ROLE_USER]
-    ROLE_TEACHER: [ROLE_STUDENT, ROLE_USER]
-    ROLE_MODERATOR: [ROLE_STUDENT, ROLE_USER, ROLE_TEACHER]
-    ROLE_ADMIN: [ROLE_TEACHER,ROLE_STUDENT,ROLE_USER,ROLE_MODERATOR,ROLE_ALLOWED_TO_SWITCH,]
-    access_denied_handler: App\Security\AccessDeniedHandler
+        ROLE_USER: [ROLE_USER]
+        ROLE_STUDENT: [ROLE_USER]
+        ROLE_TEACHER: [ROLE_STUDENT, ROLE_USER]
+        ROLE_MODERATOR: [ROLE_STUDENT, ROLE_USER, ROLE_TEACHER]
+        ROLE_ADMIN: [ROLE_TEACHER,ROLE_STUDENT,ROLE_USER,ROLE_MODERATOR,ROLE_ALLOWED_TO_SWITCH,]
+        access_denied_handler: App\Security\AccessDeniedHandler
+
         password_hashers:
             # By default, password hashers are resource intensive and take time. This is
             # important to generate secure password hashes. In tests however, secure hashes

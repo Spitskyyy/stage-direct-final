@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class InternshipController extends AbstractController
 {
     #[Route(name: 'app_internship_index', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted(attribute: 'ROLE_USER')]
 
     public function index(Request $request, InternshipRepository $internshipRepository): Response
     {
@@ -39,7 +39,7 @@ final class InternshipController extends AbstractController
             }
             $internships = $internshipRepository->searchBy($criteria);
         }
-        
+
         return $this->render('internship/index.html.twig', [
             'internships' => $internships,
             'total_records' => $totalRecords,
@@ -48,7 +48,7 @@ final class InternshipController extends AbstractController
             'search_term' => $searchTerm, // Passer le terme de recherche au template
         ]);
     }
-   
+
     #[Route('/new', name: 'app_internship_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
 
@@ -59,17 +59,41 @@ final class InternshipController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $internship->setIsVerified(false); // Met en attente de validation
             $entityManager->persist($internship);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_internship_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Votre stage est en attente de validation.');
+
+            return $this->redirectToRoute('internship_pending'); // Redirection vers la page d’attente
         }
 
         return $this->render('internship/new.html.twig', [
-            'internship' => $internship,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/internship/pending', name: 'internship_pending')]
+    public function pending(EntityManagerInterface $entityManager): Response
+    {
+        $internships = $entityManager->getRepository(Internship::class)->findBy(['is_verified' => false]);
+
+        return $this->render('internship/pending.html.twig', [
+            'internships' => $internships,
+        ]);
+    }
+
+    #[Route('/internship/verify/{id}', name: 'internship_verify')]
+    public function verify(Internship $internship, EntityManagerInterface $entityManager): Response
+    {
+        $internship->setIsVerified(true);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Stage vérifié avec succès.');
+
+        return $this->redirectToRoute('app_internship_index');
+    }
+
 
     #[Route('/{id}', name: 'app_internship_show', methods: ['GET'])]
     public function show(Internship $internship): Response
@@ -104,11 +128,15 @@ final class InternshipController extends AbstractController
 
     public function delete(Request $request, Internship $internship, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$internship->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $internship->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($internship);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_internship_index', [], Response::HTTP_SEE_OTHER);
     }
+
+
+
+
 }
