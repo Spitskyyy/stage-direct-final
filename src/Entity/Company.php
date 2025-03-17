@@ -26,7 +26,7 @@ class Company
     private ?string $city = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $zip = null;
+    private ?string $zip = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $country = null;
@@ -92,12 +92,12 @@ class Company
         return $this;
     }
 
-    public function getZip(): ?int
+    public function getZip(): ?string
     {
         return $this->zip;
     }
 
-    public function setZip(?int $zip): static
+    public function setZip(?string $zip): static
     {
         $this->zip = $zip;
 

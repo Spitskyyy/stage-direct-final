@@ -31,16 +31,9 @@ final class CompanyController extends AbstractController
 
         if ($searchTerm) {
             // Si le champ de recherche est 'zip', on effectue une recherche en tant que texte
-            if ($searchField == 'zip') {
-                // Utiliser une requête SQL natif pour le champ zip
-                $queryBuilder
-                    ->where("c." . $searchField ." LIKE :searchTerm")
-                    ->setParameter('searchTerm', '%' . strval($searchTerm) . '%');
-            } else {
-                $queryBuilder
-                    ->where("c.$searchField LIKE :searchTerm")
-                    ->setParameter('searchTerm', '%' . $searchTerm . '%');
-            }
+            $queryBuilder
+                ->where("c.$searchField LIKE :searchTerm")
+                ->setParameter('searchTerm', '%' . $searchTerm . '%');
         }
 
         dump($searchTerm);
@@ -169,5 +162,4 @@ final class CompanyController extends AbstractController
 
         return $response;
     }
-
 }
