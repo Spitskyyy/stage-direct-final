@@ -17,37 +17,36 @@ final class InternshipController extends AbstractController
 {
     #[Route(name: 'app_internship_index', methods: ['GET'])]
     #[IsGranted(attribute: 'ROLE_USER')]
+public function index(Request $request, InternshipRepository $internshipRepository): Response
+{
+    $limit = 10; // Nombre d'éléments par page
+    $page = (int) $request->query->get('page', 1); // Page actuelle, par défaut 1
+    $searchTerm = $request->query->get('search', ''); // Paramètre de recherche, par défaut ''
 
-    public function index(Request $request, InternshipRepository $internshipRepository): Response
-    {
-        $limit = 10; // Nombre d'éléments par page
-        $page = (int) $request->query->get('page', 1); // Page actuelle, par défaut 1
-        $searchTerm = $request->query->get('search', ''); // Paramètre de recherche, par défaut ''
+    // Ajout du critère pour ne récupérer que les stages vérifiés
+    $criteria = ['is_verified' => true];
 
-        $criteria = [];
-        // Récupération du nombre total d'éléments (en tenant compte du filtre de recherche)
-        $totalRecords = $internshipRepository->count($criteria);
-        $totalPages = (int) ceil($totalRecords / $limit); // Nombre total de pages
-
-        if (empty($searchTerm)) {
-            // Calcul de l'offset pour la pagination
-            $offset = ($page - 1) * $limit;
-            $internships = $internshipRepository->findBy([], null, $limit, $offset);
-        } else {
-            if ($searchTerm) {
-                $criteria['name'] = $searchTerm; // Exemple de critère
-            }
-            $internships = $internshipRepository->searchBy($criteria);
-        }
-
-        return $this->render('internship/index.html.twig', [
-            'internships' => $internships,
-            'total_records' => $totalRecords,
-            'total_pages' => $totalPages,
-            'current_page' => $page,
-            'search_term' => $searchTerm, // Passer le terme de recherche au template
-        ]);
+    if (!empty($searchTerm)) {
+        $criteria['title'] = $searchTerm; // Exemple de critère si le repository supporte la recherche
     }
+
+    // Récupération du nombre total de stages vérifiés
+    $totalRecords = $internshipRepository->count($criteria);
+    $totalPages = (int) ceil($totalRecords / $limit);
+
+    // Pagination
+    $offset = ($page - 1) * $limit;
+    $internships = $internshipRepository->findBy($criteria, null, $limit, $offset);
+
+    return $this->render('internship/index.html.twig', [
+        'internships' => $internships,
+        'total_records' => $totalRecords,
+        'total_pages' => $totalPages,
+        'current_page' => $page,
+        'search_term' => $searchTerm,
+    ]);
+}
+
 
     #[Route('/new', name: 'app_internship_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
