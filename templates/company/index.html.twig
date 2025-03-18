@@ -1,85 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Company index{% endblock %}
-
-{% block body %}
-<br><br><br>
-
-<div class="min-h-screen flex items-center justify-center">
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
-        <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-            <label for="table-search" class="sr-only">Search</label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                    </svg>
-                </div>
-                <form action="{{ path('app_company_index') }}" method="get">
-                    <input type="text" id="table-search" name="search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Rechercher des entreprises" value="{{ search_term }}">
-                    
-                    <!-- Champ de sélection pour trier -->
-                    <select name="search_field" class="block p-2 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <option value="name" {% if search_field == 'name' %}selected{% endif %}>Nom</option>
-                        <option value="address" {% if search_field == 'address' %}selected{% endif %}>Adresse</option>
-                        <option value="city" {% if search_field == 'city' %}selected{% endif %}>Ville</option>
-                        <option value="zip" {% if search_field == 'zip' %}selected{% endif %}>Code Postal</option>
-                        <option value="country" {% if search_field == 'country' %}selected{% endif %}>Pays</option>
-                    </select>
-                    
-                    <button type="submit" class="btn btn-primary mt-2">Trier</button>
-                </form>
-            </div>
-        </div>
-
-        <table id="company-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="px-6 py-3">Id</th>
-                    <th scope="col" class="px-6 py-3">Name</th>
-                    <th scope="col" class="px-6 py-3">Address</th>
-                    <th scope="col" class="px-6 py-3">City</th>
-                    <th scope="col" class="px-6 py-3">Zip</th>
-                    <th scope="col" class="px-6 py-3">Country</th>
-                    <th scope="col" class="px-6 py-3">Phone</th>
-                    <th scope="col" class="px-6 py-3">Email</th>
-                    <th scope="col" class="px-6 py-3">Is_verified</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for company in companies %}
-                    <tr>
-                        <td>{{ company.id }}</td>
-                        <td>{{ company.name }}</td>
-                        <td>{{ company.address }}</td>
-                        <td>{{ company.city }}</td>
-                        <td>{{ company.zip }}</td>
-                        <td>{{ company.country }}</td>
-                        <td>{{ company.phone }}</td>
-                        <td>{{ company.email }}</td>
-                        <td>{{ company.isVerified ? 'Yes' : 'No' }}</td>
-                        <td>
-                            <a href="{{ path('app_company_show', {'id': company.id}) }}">Show</a>
-                            <a href="{{ path('app_company_edit', {'id': company.id}) }}">Edit</a>
-                            {{ include('company/_delete_form.html.twig') }}
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="10">No records found</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-{% endblock %}
-
-{# 
-{% extends 'base.html.twig' %}
-
 {% block title %}Company index
 {% endblock %}
 
@@ -162,5 +82,3 @@
 	</div>
 
 {% endblock %}
-
- #}
