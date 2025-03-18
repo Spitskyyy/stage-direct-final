@@ -16,6 +16,21 @@ class InternshipRepository extends ServiceEntityRepository
         parent::__construct($registry, Internship::class);
     }
 
+    public function searchBy(array $criteria)
+{
+    $qb = $this->createQueryBuilder('i')
+        ->where('i.isVerified = :verified')
+        ->setParameter('verified', true);
+
+    if (!empty($criteria['title'])) {
+        $qb->andWhere('i.title LIKE :search')
+           ->setParameter('search', '%' . $criteria['title'] . '%');
+    }
+
+    return $qb->getQuery()->getResult();
+}
+
+
 //    /**
 //     * @return Internship[] Returns an array of Internship objects
 //     */
