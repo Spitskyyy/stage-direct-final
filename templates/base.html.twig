@@ -228,11 +228,13 @@
 </ul>
 </div>
 </nav>
+{% if app.user %}
 {% if not app.user.isVerified %}
     <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4 rounded-lg">
         <p class="font-semibold">Vous n'avez pas vérifié votre email !</p>
         <p>Veuillez consulter votre boîte mail et vérifier votre adresse.</p>
     </div>
+{% endif %}
 {% endif %}
 
 
