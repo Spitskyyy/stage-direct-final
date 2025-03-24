@@ -30,6 +30,7 @@
 						</li>
 
 						{% if is_granted('ROLE_ADMIN') %}
+						{% if app.user.isVerified %}
 							<li>
 								<button id="dropdownEntrepriseLink" data-dropdown-toggle="dropdownEntreprise" class="flex items-center justify-between w-full py-2 px-3 text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent">Entreprise
 									<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 10 6">
@@ -89,10 +90,11 @@
 									</ul>
 								</div>
 							</li>
-
+						{% endif %}
 						{% endif %}
 
 						{% if is_granted('ROLE_ADMIN') %}
+						{% if app.user.isVerified %}
 							<li>
 								<button id="dropdownAdminLink" data-dropdown-toggle="dropdownAdmin" class="flex items-center justify-between w-full py-2 px-3 text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent">Administration
 									<svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 10 6">
@@ -158,6 +160,7 @@
 									</ul>
 								</div>
 							</li>
+						{% endif %}
 						{% endif %}
 
 						<li>

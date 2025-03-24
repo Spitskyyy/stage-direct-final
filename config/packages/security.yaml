@@ -9,6 +9,14 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
+
+    role_hierarchy:
+        ROLE_USER: [ROLE_USER]
+        ROLE_STUDENT: [ROLE_USER]
+        ROLE_TEACHER: [ROLE_STUDENT, ROLE_USER]
+        ROLE_MODERATOR: [ROLE_STUDENT, ROLE_USER, ROLE_TEACHER]
+        ROLE_ADMIN: [ROLE_TEACHER, ROLE_STUDENT, ROLE_USER, ROLE_MODERATOR, ROLE_ALLOWED_TO_SWITCH]
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -39,13 +47,12 @@ security:
 
 when@test:
     security:
-    
     role_hierarchy:
         ROLE_USER: [ROLE_USER]
         ROLE_STUDENT: [ROLE_USER]
         ROLE_TEACHER: [ROLE_STUDENT, ROLE_USER]
         ROLE_MODERATOR: [ROLE_STUDENT, ROLE_USER, ROLE_TEACHER]
-        ROLE_ADMIN: [ROLE_TEACHER,ROLE_STUDENT,ROLE_USER,ROLE_MODERATOR,ROLE_ALLOWED_TO_SWITCH,]
+        ROLE_ADMIN: [ROLE_TEACHER, ROLE_STUDENT, ROLE_USER, ROLE_MODERATOR, ROLE_ALLOWED_TO_SWITCH]
         access_denied_handler: App\Security\AccessDeniedHandler
 
         password_hashers:
