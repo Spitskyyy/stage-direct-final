@@ -19,19 +19,10 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 #[Route('/company')]
 final class CompanyController extends AbstractController
 {
-    private function denyAccessUnlessVerified(): void
-    {
-        if (!$this->getUser()->isVerified()) {
-            throw new AccessDeniedException('Vous devez vérifier votre compte pour accéder à cette page.');
-        }
-    }
-
     #[Route(name: 'app_company_index', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $this->denyAccessUnlessVerified(); // Vérification ici
-
         $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c');
 
         for ($i = 1; $i <= 3; $i++) {
@@ -62,8 +53,6 @@ final class CompanyController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $this->denyAccessUnlessVerified();
-
         $company = new Company();
         $form = $this->createForm(CompanyType::class, $company);
         $form->handleRequest($request);
@@ -85,8 +74,6 @@ final class CompanyController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function show(Company $company): Response
     {
-        $this->denyAccessUnlessVerified();
-
         return $this->render('company/show.html.twig', [
             'company' => $company,
         ]);
@@ -96,8 +83,6 @@ final class CompanyController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function edit(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
-        $this->denyAccessUnlessVerified();
-
         $form = $this->createForm(CompanyType::class, $company);
         $form->handleRequest($request);
 
@@ -117,8 +102,6 @@ final class CompanyController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function delete(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
-        $this->denyAccessUnlessVerified();
-
         if ($this->isCsrfTokenValid('delete' . $company->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($company);
             $entityManager->flush();
@@ -131,8 +114,6 @@ final class CompanyController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function exportToExcel(CompanyRepository $companyRepository): StreamedResponse
     {
-        $this->denyAccessUnlessVerified();
-
         $companies = $companyRepository->findAll();
 
         $response = new StreamedResponse(function () use ($companies) {
