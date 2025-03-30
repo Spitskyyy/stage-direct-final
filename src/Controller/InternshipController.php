@@ -72,7 +72,7 @@ public function index(Request $request, InternshipRepository $internshipReposito
         ]);
     }
 
-    #[Route('/internship/pending', name: 'internship_pending')]
+    #[Route('/pending', name: 'internship_pending')]
     public function pending(EntityManagerInterface $entityManager): Response
     {
         $internships = $entityManager->getRepository(Internship::class)->findBy(['is_verified' => false]);
@@ -82,7 +82,7 @@ public function index(Request $request, InternshipRepository $internshipReposito
         ]);
     }
 
-    #[Route('/internship/verify/{id}', name: 'internship_verify')]
+    #[Route('/verify/{id}', name: 'internship_verify')]
     public function verify(Internship $internship, EntityManagerInterface $entityManager): Response
     {
         $internship->setIsVerified(true);
