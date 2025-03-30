@@ -16,6 +16,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 #[Route('/company')]
 final class CompanyController extends AbstractController
@@ -26,6 +28,38 @@ final class CompanyController extends AbstractController
             throw new AccessDeniedException('Vous devez vérifier votre compte pour accéder à cette page.');
         }
     }
+
+    #[Route('/company/export-pdf', name: 'app_company_export_pdf')]
+    
+public function exportPdf(EntityManagerInterface $entityManager): Response
+{
+    // Remplacer getDoctrine() par l'EntityManagerInterface injecté
+    $companies = $entityManager->getRepository(Company::class)->findAll();
+
+    // Configure Dompdf
+    $options = new Options();
+    $options->set('defaultFont', 'Arial');
+
+    $dompdf = new Dompdf($options);
+
+    // Générer le HTML pour le PDF
+    $html = $this->renderView('company/export_pdf.html.twig', [
+        'companies' => $companies,
+    ]);
+
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'landscape');
+    $dompdf->render();
+
+    return new Response(
+        $dompdf->output(),
+        200,
+        [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="companies.pdf"',
+        ]
+    );
+}
 
 #[Route(name: 'app_company_index', methods: ['GET'])]
 #[IsGranted('ROLE_USER')]

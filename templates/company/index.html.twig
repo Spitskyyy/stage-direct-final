@@ -15,13 +15,13 @@
                                 <input type="text" name="search[]" class="block p-2 text-sm border rounded-lg w-80" placeholder="Recherche">
                                 <select name="search_field[]" class="block p-2 text-sm border rounded-lg w-48">
                                     <option value="name">Nom</option>
-                            <option value="address">Adresse</option>
-                            <option value="city">Ville</option>
-                            <option value="zip">Code Postal</option>
-                            <option value="country">Pays</option>
-                            <option value="phone">Téléphone</option>
-                            <option value="email">Email</option>
-                            <option value="isVerified">Vérifié</option>
+                                    <option value="address">Adresse</option>
+                                    <option value="city">Ville</option>
+                                    <option value="zip">Code Postal</option>
+                                    <option value="country">Pays</option>
+                                    <option value="phone">Téléphone</option>
+                                    <option value="email">Email</option>
+                                    <option value="isVerified">Vérifié</option>
                                 </select>
                             </div>
                         </div>
@@ -29,7 +29,13 @@
                         <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
                     </form>
                 </div>
+                <!-- Ajouter le bouton pour l'export PDF -->
+                <div>
+                    <a href="{{ path('app_company_export_pdf') }}" class="btn btn-success">Exporter en PDF</a>
+                </div>
             </div>
+
+            <!-- Tableau des entreprises -->
             <table id="company-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
@@ -82,7 +88,7 @@
                 const newSearch = document.createElement("div");
                 newSearch.classList.add("search-group", "flex", "gap-2", "mb-2");
                 
-                newSearch.innerHTML = `
+                newSearch.innerHTML = ` 
                     <input type="text" name="search[]" class="block p-2 text-sm border rounded-lg w-80" placeholder="Recherche">
                     <select name="search_field[]" class="p-2 text-sm border rounded-lg w-48">
                         <option value="name">Nom</option>
