@@ -29,7 +29,7 @@
 							<a href="{{ path('app_index') }}" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Accueil</a>
 						</li>
 
-						{% if is_granted('ROLE_ADMIN') %}
+						{% if is_granted('ROLE_STUDENT') %}
 						{% if app.user.isVerified %}
 							<li>
 								<button id="dropdownEntrepriseLink" data-dropdown-toggle="dropdownEntreprise" class="flex items-center justify-between w-full py-2 px-3 text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent">Entreprise

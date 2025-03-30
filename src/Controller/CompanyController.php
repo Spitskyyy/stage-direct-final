@@ -95,6 +95,8 @@ public function index(Request $request, EntityManagerInterface $entityManager): 
     }
 
     #[Route('/company/pending', name: 'company_pending')]
+    #[IsGranted('ROLE_TEACHER')]
+
     public function pending(EntityManagerInterface $entityManager): Response
     {
         $company = $entityManager->getRepository(Company::class)->findBy(['is_verified' => false]);
@@ -105,6 +107,8 @@ public function index(Request $request, EntityManagerInterface $entityManager): 
     }
 
     #[Route('/verify/{id}', name: 'company_verify')]
+    #[IsGranted('ROLE_TEACHER')]
+
     public function verify(Company $company, EntityManagerInterface $entityManager): Response
     {
         $company->setIsVerified(true);
@@ -129,7 +133,7 @@ public function index(Request $request, EntityManagerInterface $entityManager): 
 
 
     #[Route('/company/{id}/edit', name: 'app_company_edit', methods: ['GET', 'POST'])]
-    // #[IsGranted('ROLE_STUDENT')]
+    // #[IsGranted('ROLE_USER')]
     public function edit(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessVerified($this->getUser());
