@@ -80,19 +80,43 @@ public function index(Request $request, EntityManagerInterface $entityManager): 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $company->setIsVerified(false); // Met en attente de validation
             $entityManager->persist($company);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_company_index');
+            $this->addFlash('success', 'Votre entreprise est en attente de validation.');
+
+            return $this->redirectToRoute('company_pending'); // Redirection vers la page d’attente
         }
 
         return $this->render('company/new.html.twig', [
-            'company' => $company,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}', name: 'app_company_show', methods: ['GET'])]
+    #[Route('/company/pending', name: 'company_pending')]
+    public function pending(EntityManagerInterface $entityManager): Response
+    {
+        $company = $entityManager->getRepository(Company::class)->findBy(['is_verified' => false]);
+
+        return $this->render('company/pending.html.twig', [
+            'company' => $company,
+        ]);
+    }
+
+    #[Route('/verify/{id}', name: 'company_verify')]
+    public function verify(Company $company, EntityManagerInterface $entityManager): Response
+    {
+        $company->setIsVerified(true);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Stage vérifié avec succès.');
+
+        return $this->redirectToRoute('app_company_index');
+    }
+
+
+    #[Route('/company/{id}', name: 'app_company_show', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     public function show(Company $company): Response
     {
@@ -103,8 +127,9 @@ public function index(Request $request, EntityManagerInterface $entityManager): 
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_company_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_USER')]
+
+    #[Route('/company/{id}/edit', name: 'app_company_edit', methods: ['GET', 'POST'])]
+    // #[IsGranted('ROLE_STUDENT')]
     public function edit(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessVerified($this->getUser());
