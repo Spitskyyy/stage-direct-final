@@ -13,17 +13,45 @@
                 'Date de début': internship.startDate|date('d/m/Y'),
                 'Date de fin': internship.endDate|date('d/m/Y'),
                 'Vérifié': internship.isVerified ? 'Oui' : 'Non',
-                'Stagiaire': internship.intern, 
+                'Stagiaire': internship.intern,
                 'École': internship.school,
-                'Entreprise': internship.company,
-                'Rapport de visite': internship.id,
-                'Liste d\'activités': internship.id
+                'Entreprise': internship.company
             } %}
                 <div class="flex justify-between border-b border-gray-300 pb-2 dark:border-gray-600">
                     <dt class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ label }}</dt>
                     <dd class="text-sm text-gray-900 dark:text-white font-semibold">{{ value }}</dd>
                 </div>
             {% endfor %}
+
+            {# Lien vers la liste des activités #}
+            <div class="flex justify-between border-b border-gray-300 pb-2 dark:border-gray-600">
+                <dt class="text-sm font-medium text-gray-600 dark:text-gray-300">Liste d'activités</dt>
+                <dd class="text-sm font-semibold">
+                    {% if internship.activityList %}
+                        <a href="{{ path('app_activity_list_show', {'id': internship.activityList.id}) }}" 
+                            class="text-purple-600 dark:text-purple-400 hover:underline">
+                            Voir Activités
+                        </a>
+                    {% else %}
+                        <span class="text-gray-400">Aucune activité</span>
+                    {% endif %}
+                </dd>
+            </div>
+
+            {# Lien vers le rapport de visite #}
+            <div class="flex justify-between border-b border-gray-300 pb-2 dark:border-gray-600">
+                <dt class="text-sm font-medium text-gray-600 dark:text-gray-300">Rapport de visite</dt>
+                <dd class="text-sm font-semibold">
+                    {% if internship.visitReport %}
+                        <a href="{{ path('app_visit_report_show', {'id': internship.visitReport.id}) }}" 
+                            class="text-green-600 dark:text-green-400 hover:underline">
+                            Voir Rapport
+                        </a>
+                    {% else %}
+                        <span class="text-gray-400">Aucun rapport</span>
+                    {% endif %}
+                </dd>
+            </div>
         </dl>
 
         <div class="mt-6 flex justify-between">
