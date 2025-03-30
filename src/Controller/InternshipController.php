@@ -73,6 +73,8 @@ public function index(Request $request, InternshipRepository $internshipReposito
     }
 
     #[Route('/pending', name: 'internship_pending')]
+    #[IsGranted('ROLE_TEACHER')]
+
     public function pending(EntityManagerInterface $entityManager): Response
     {
         $internships = $entityManager->getRepository(Internship::class)->findBy(['is_verified' => false]);
@@ -83,6 +85,8 @@ public function index(Request $request, InternshipRepository $internshipReposito
     }
 
     #[Route('/verify/{id}', name: 'internship_verify')]
+    #[IsGranted('ROLE_TEACHER')]
+
     public function verify(Internship $internship, EntityManagerInterface $entityManager): Response
     {
         $internship->setIsVerified(true);
@@ -95,6 +99,8 @@ public function index(Request $request, InternshipRepository $internshipReposito
 
 
     #[Route('/{id}', name: 'app_internship_show', methods: ['GET'])]
+    #[IsGranted('ROLE_TEACHER')]
+
     public function show(Internship $internship): Response
     {
         return $this->render('internship/show.html.twig', [

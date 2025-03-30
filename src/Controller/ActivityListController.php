@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ActivityListController extends AbstractController
 {
     #[Route(name: 'app_activity_list_index', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_STUDENT')]
     public function index(ActivityListRepository $activityListRepository): Response
     {
         return $this->render('activity_list/index.html.twig', [
@@ -45,7 +45,7 @@ final class ActivityListController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_activity_list_show', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_STUDENT')]
 
     public function show(ActivityList $activityList): Response
     {
@@ -55,7 +55,7 @@ final class ActivityListController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_activity_list_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_STUDENT')]
 
     public function edit(Request $request, ActivityList $activityList, EntityManagerInterface $entityManager): Response
     {
@@ -75,7 +75,7 @@ final class ActivityListController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_activity_list_delete', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_STUDENT')]
 
     public function delete(Request $request, ActivityList $activityList, EntityManagerInterface $entityManager): Response
     {
