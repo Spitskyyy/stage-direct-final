@@ -27,37 +27,47 @@ final class CompanyController extends AbstractController
         }
     }
 
-    #[Route(name: 'app_company_index', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $this->denyAccessUnlessVerified($this->getUser()); // Vérification ici
+#[Route(name: 'app_company_index', methods: ['GET'])]
+#[IsGranted('ROLE_USER')]
+public function index(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $this->denyAccessUnlessVerified($this->getUser());
 
-        $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c');
+    $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c');
 
-        for ($i = 1; $i <= 3; $i++) {
-            $search = $request->query->get('search' . $i);
-            $searchField = $request->query->get('search_field' . $i);
+    $searchTerms = $request->query->all('search');
+    $searchFields = $request->query->all('search_field');
 
-            if ($search && $searchField) {
-                $queryBuilder
-                    ->andWhere("c.$searchField LIKE :search$i")
-                    ->setParameter("search$i", '%' . $search . '%');
+    // Liste des champs numériques qui ne supportent pas LIKE
+    $numericFields = ['phone', 'zip'];
+
+    if ($searchTerms && $searchFields) {
+        foreach ($searchTerms as $index => $term) {
+            if (!empty($term) && isset($searchFields[$index])) {
+                $field = $searchFields[$index];
+
+                // Vérifier si le champ est numérique
+                if (in_array($field, $numericFields)) {
+                    $queryBuilder
+                        ->andWhere("c.$field = :search$index") // Utiliser "=" au lieu de LIKE
+                        ->setParameter("search$index", $term);
+                } else {
+                    $queryBuilder
+                        ->andWhere("c.$field LIKE :search$index")
+                        ->setParameter("search$index", "%{$term}%");
+                }
             }
         }
-
-        $companies = $queryBuilder->getQuery()->getResult();
-
-        return $this->render('company/index.html.twig', [
-            'companies' => $companies,
-            'search1' => $request->query->get('search1'),
-            'search2' => $request->query->get('search2'),
-            'search3' => $request->query->get('search3'),
-            'search_field1' => $request->query->get('search_field1'),
-            'search_field2' => $request->query->get('search_field2'),
-            'search_field3' => $request->query->get('search_field3'),
-        ]);
     }
+
+    $companies = $queryBuilder->getQuery()->getResult();
+
+    return $this->render('company/index.html.twig', [
+        'companies' => $companies,
+        'search' => $searchTerms,
+        'search_field' => $searchFields,
+    ]);
+}
 
     #[Route('/new', name: 'app_company_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
