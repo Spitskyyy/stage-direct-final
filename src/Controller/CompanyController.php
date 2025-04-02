@@ -80,7 +80,7 @@ final class CompanyController extends AbstractController
                 if (!empty($term) && isset($searchFields[$index])) {
                     $field = $searchFields[$index];
 
-                    if (in_array($field, $numericFields)) {
+                    if (in_array($field, $numericFields)&& $field != "zip" && $field != "phone") {
                         $queryBuilder->andWhere("c.$field = :search$index")
                             ->setParameter("search$index", $term);
                     } else {
