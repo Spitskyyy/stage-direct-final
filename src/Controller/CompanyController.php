@@ -2,22 +2,23 @@
 
 namespace App\Controller;
 
-use App\Entity\Company;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use App\Entity\User;
+use App\Entity\Company;
 use App\Form\CompanyType;
 use App\Repository\CompanyRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 
 #[Route('/company')]
 final class CompanyController extends AbstractController
@@ -30,78 +31,74 @@ final class CompanyController extends AbstractController
     }
 
     #[Route('/company/export-pdf', name: 'app_company_export_pdf')]
-    
-public function exportPdf(EntityManagerInterface $entityManager): Response
-{
-    // Remplacer getDoctrine() par l'EntityManagerInterface injecté
-    $companies = $entityManager->getRepository(Company::class)->findAll();
 
-    // Configure Dompdf
-    $options = new Options();
-    $options->set('defaultFont', 'Arial');
+    public function exportPdf(EntityManagerInterface $entityManager): Response
+    {
+        // Remplacer getDoctrine() par l'EntityManagerInterface injecté
+        $companies = $entityManager->getRepository(Company::class)->findAll();
 
-    $dompdf = new Dompdf($options);
+        // Configure Dompdf
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
 
-    // Générer le HTML pour le PDF
-    $html = $this->renderView('company/export_pdf.html.twig', [
-        'companies' => $companies,
-    ]);
+        $dompdf = new Dompdf($options);
 
-    $dompdf->loadHtml($html);
-    $dompdf->setPaper('A4', 'landscape');
-    $dompdf->render();
+        // Générer le HTML pour le PDF
+        $html = $this->renderView('company/export_pdf.html.twig', [
+            'companies' => $companies,
+        ]);
 
-    return new Response(
-        $dompdf->output(),
-        200,
-        [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="companies.pdf"',
-        ]
-    );
-}
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
 
-#[Route(name: 'app_company_index', methods: ['GET'])]
-#[IsGranted('ROLE_USER')]
-public function index(Request $request, EntityManagerInterface $entityManager): Response
-{
-    $this->denyAccessUnlessVerified($this->getUser());
+        return new Response(
+            $dompdf->output(),
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="companies.pdf"',
+            ]
+        );
+    }
 
-    $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c');
+    #[Route(name: 'app_company_index', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $this->denyAccessUnlessVerified($this->getUser());
 
-    $searchTerms = $request->query->all('search');
-    $searchFields = $request->query->all('search_field');
+        $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c')
+            ->where('c.is_verified = true');
 
-    // Liste des champs numériques qui ne supportent pas LIKE
-    $numericFields = ['phone', 'zip'];
+        $searchTerms = $request->query->all('search');
+        $searchFields = $request->query->all('search_field');
+        $numericFields = ['phone', 'zip'];
 
-    if ($searchTerms && $searchFields) {
-        foreach ($searchTerms as $index => $term) {
-            if (!empty($term) && isset($searchFields[$index])) {
-                $field = $searchFields[$index];
+        if ($searchTerms && $searchFields) {
+            foreach ($searchTerms as $index => $term) {
+                if (!empty($term) && isset($searchFields[$index])) {
+                    $field = $searchFields[$index];
 
-                // Vérifier si le champ est numérique
-                if (in_array($field, $numericFields)) {
-                    $queryBuilder
-                        ->andWhere("c.$field = :search$index") // Utiliser "=" au lieu de LIKE
-                        ->setParameter("search$index", $term);
-                } else {
-                    $queryBuilder
-                        ->andWhere("c.$field LIKE :search$index")
-                        ->setParameter("search$index", "%{$term}%");
+                    if (in_array($field, $numericFields)) {
+                        $queryBuilder->andWhere("c.$field = :search$index")
+                            ->setParameter("search$index", $term);
+                    } else {
+                        $queryBuilder->andWhere("c.$field LIKE :search$index")
+                            ->setParameter("search$index", "%{$term}%");
+                    }
                 }
             }
         }
+
+        $companies = $queryBuilder->getQuery()->getResult();
+
+        return $this->render('company/index.html.twig', [
+            'companies' => $companies,
+            'search' => $searchTerms,
+            'search_field' => $searchFields,
+        ]);
     }
-
-    $companies = $queryBuilder->getQuery()->getResult();
-
-    return $this->render('company/index.html.twig', [
-        'companies' => $companies,
-        'search' => $searchTerms,
-        'search_field' => $searchFields,
-    ]);
-}
 
     #[Route('/new', name: 'app_company_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
@@ -120,7 +117,7 @@ public function index(Request $request, EntityManagerInterface $entityManager): 
 
             $this->addFlash('success', 'Votre entreprise est en attente de validation.');
 
-            return $this->redirectToRoute('company_pending'); // Redirection vers la page d’attente
+            return $this->redirectToRoute('app_company_index'); // Redirection vers la page d’attente
         }
 
         return $this->render('company/new.html.twig', [
@@ -133,10 +130,10 @@ public function index(Request $request, EntityManagerInterface $entityManager): 
 
     public function pending(EntityManagerInterface $entityManager): Response
     {
-        $company = $entityManager->getRepository(Company::class)->findBy(['is_verified' => false]);
+        $companies = $entityManager->getRepository(Company::class)->findBy(['is_verified' => false]);
 
         return $this->render('company/pending.html.twig', [
-            'company' => $company,
+            'company' => $companies,
         ]);
     }
 
@@ -153,6 +150,17 @@ public function index(Request $request, EntityManagerInterface $entityManager): 
         return $this->redirectToRoute('app_company_index');
     }
 
+    #[Route('/refuse/{id}', name: 'company_refuse')]
+    #[IsGranted('ROLE_TEACHER')]
+    public function refuse(Company $company, EntityManagerInterface $entityManager): RedirectResponse
+    {
+        $entityManager->remove($company);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Stage refusé et supprimé.');
+
+        return $this->redirectToRoute('company_pending');
+    }
 
     #[Route('/company/{id}', name: 'app_company_show', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
