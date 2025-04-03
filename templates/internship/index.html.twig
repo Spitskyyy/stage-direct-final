@@ -9,90 +9,76 @@
 
 	<div class="min-h-screen flex items-center justify-center">
 		<div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
-			<div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-				<label for="table-search" class="sr-only">Search</label>
-				<div class="relative">
-					<div class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
-						<svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-							<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-						</svg>
-					</div>
-					<form action="{{ path('app_internship_index') }}" method="get">
-						<input type="text" id="table-search" name="search" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Rechercher des stages" value="{{ search_term }}">
-					</form>
-				</div>
-			</div>
+			<table id="internship-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+				<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+					<tr>
+						<th scope="col" class="px-6 py-3">Id</th>
+						<th scope="col" class="px-6 py-3">Intern ID</th>
+						<th scope="col" class="px-6 py-3">School ID</th>
+						<th scope="col" class="px-6 py-3">Company ID</th>
+						<th scope="col" class="px-6 py-3">Title</th>
+						<th scope="col" class="px-6 py-3">Start Date</th>
+						<th scope="col" class="px-6 py-3">End Date</th>
+						<th scope="col" class="px-6 py-3">Liste des activités</th>
+						<th scope="col" class="px-6 py-3">Voir Rapport de Visite</th>
+						<th scope="col" class="px-6 py-3">Actions</th>
+					</tr>
+				</thead>
+				<tbody id="table-body">
+					{% for internship in internships %}
+						<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+							<td class="px-6 py-4">{{ internship.id }}</td>
 
-<table id="internship-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <tr>
-            <th scope="col" class="px-6 py-3">Id</th>
-            <th scope="col" class="px-6 py-3">Intern ID</th>
-            <th scope="col" class="px-6 py-3">School ID</th>
-            <th scope="col" class="px-6 py-3">Company ID</th>
-            <th scope="col" class="px-6 py-3">Title</th>
-            <th scope="col" class="px-6 py-3">Start Date</th>
-            <th scope="col" class="px-6 py-3">End Date</th>
-            <th scope="col" class="px-6 py-3">Liste des activités</th>
-            <th scope="col" class="px-6 py-3">Voir Rapport de Visite</th>
-            <th scope="col" class="px-6 py-3">Actions</th>
-        </tr>
-    </thead>
-    <tbody id="table-body">
-        {% for internship in internships %}
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td class="px-6 py-4">{{ internship.id }}</td>
+							{# Accès aux relations via les objets liés #}
+							<td class="px-6 py-4">{{ internship.intern ? internship.intern.id : 'N/A' }}</td>
+							<td class="px-6 py-4">{{ internship.school ? internship.school.id : 'N/A' }}</td>
+							<td class="px-6 py-4">{{ internship.company ? internship.company.id : 'N/A' }}</td>
 
-                {# Accès aux relations via les objets liés #}
-                <td class="px-6 py-4">{{ internship.intern ? internship.intern.id : 'N/A' }}</td>
-                <td class="px-6 py-4">{{ internship.school ? internship.school.id : 'N/A' }}</td>
-                <td class="px-6 py-4">{{ internship.company ? internship.company.id : 'N/A' }}</td>
+							<td class="px-6 py-4">{{ internship.title }}</td>
+							<td class="px-6 py-4">{{ internship.startDate ? internship.startDate|date('Y-m-d H:i:s') : '' }}</td>
+							<td class="px-6 py-4">{{ internship.endDate ? internship.endDate|date('Y-m-d H:i:s') : '' }}</td>
 
-                <td class="px-6 py-4">{{ internship.title }}</td>
-                <td class="px-6 py-4">{{ internship.startDate ? internship.startDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td class="px-6 py-4">{{ internship.endDate ? internship.endDate|date('Y-m-d H:i:s') : '' }}</td>
+							<td class="px-6 py-4">
+								{% if internship.activityList %}
+									<a href="{{ path('app_activity_list_show', {'id': internship.activityList.id}) }}" class="font-medium text-purple-600 dark:text-purple-500 hover:underline">
+										Voir Activité
+									</a>
+								{% else %}
+									N/A
+								{% endif %}
+							</td>
 
-                <td class="px-6 py-4">
-                    {% if internship.activityList %}
-                        <a href="{{ path('app_activity_list_show', {'id': internship.activityList.id}) }}" class="font-medium text-purple-600 dark:text-purple-500 hover:underline">
-                            Voir Activité
-                        </a>
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </td>
+							<td class="px-6 py-4">
+								{% if internship.visitReport %}
+									<a href="{{ path('app_visit_report_show', {'id': internship.visitReport.id}) }}" class="font-medium text-green-600 dark:text-green-500 hover:underline">
+										Voir Rapport de Visite
+									</a>
+								{% else %}
+									N/A
+								{% endif %}
+							</td>
 
-                <td class="px-6 py-4">
-                    {% if internship.visitReport %}
-                        <a href="{{ path('app_visit_report_show', {'id': internship.visitReport.id}) }}" class="font-medium text-green-600 dark:text-green-500 hover:underline">
-                            Voir Rapport de Visite
-                        </a>
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </td>
-
-                <td class="px-6 py-4">
-                    <a href="{{ path('app_internship_show', {'id': internship.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Show</a>
-                    <a href="{{ path('app_internship_edit', {'id': internship.id}) }}" class="font-medium text-blue-600 dark:text-green-500 hover:underline">Edit</a>
-                    {{ include('internship/_delete_form.html.twig') }}
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="10" class="px-6 py-4 text-center">Aucun stage vérifié pour le moment.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+							<td class="px-6 py-4">
+								<a href="{{ path('app_internship_show', {'id': internship.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Show</a>
+								<a href="{{ path('app_internship_edit', {'id': internship.id}) }}" class="font-medium text-blue-600 dark:text-green-500 hover:underline">Edit</a>
+								{{ include('internship/_delete_form.html.twig') }}
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="10" class="px-6 py-4 text-center">Aucun stage vérifié pour le moment.</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
 
 
 			<br>
 
 			{# <button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
-												            <a href="{{ path('app_internship_pdf') }}"
-												            class="btn btn-primary">Exporter en PDF</a>
-												        </button> #}
+															            <a href="{{ path('app_internship_pdf') }}"
+															            class="btn btn-primary">Exporter en PDF</a>
+															        </button> #}
 
 			<button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
 				<a href="{{ path('app_internship_new') }}" class="btn btn-primary">
