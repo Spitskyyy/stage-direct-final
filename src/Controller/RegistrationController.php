@@ -40,6 +40,11 @@ class RegistrationController extends AbstractController
 
             // Persist l'utilisateur dans la base de données
             $entityManager->persist($user);
+
+            $grade = $user->getGrade();
+            dump($grade);
+
+
             $entityManager->flush();
 
             // Générer l'URL de confirmation et envoyer l'email
@@ -51,7 +56,7 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
-            return $this->redirectToRoute('app_index');
+            // return $this->redirectToRoute('app_index');
         }
 
         return $this->render('registration/register.html.twig', [

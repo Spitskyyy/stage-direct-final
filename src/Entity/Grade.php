@@ -25,6 +25,9 @@ class Grade
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'grade')]
     private Collection $users;
 
+    #[ORM\ManyToOne(inversedBy: 'grades')]
+    private ?School $school = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -84,5 +87,17 @@ class Grade
         } else {
             return "Inconnu";
         }
+    }
+
+    public function getSchool(): ?School
+    {
+        return $this->school;
+    }
+
+    public function setSchool(?School $school): static
+    {
+        $this->school = $school;
+
+        return $this;
     }
 }

@@ -40,9 +40,16 @@ class School
     #[ORM\OneToMany(targetEntity: Internship::class, mappedBy: 'school')]
     private Collection $internships;
 
+    /**
+     * @var Collection<int, Grade>
+     */
+    #[ORM\OneToMany(targetEntity: Grade::class, mappedBy: 'school')]
+    private Collection $grades;
+
     public function __construct()
     {
         $this->internships = new ArrayCollection();
+        $this->grades = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -159,5 +166,35 @@ class School
         } else {
             return "inconnu";
         }
+    }
+
+    /**
+     * @return Collection<int, Grade>
+     */
+    public function getGrades(): Collection
+    {
+        return $this->grades;
+    }
+
+    public function addGrade(Grade $grade): static
+    {
+        if (!$this->grades->contains($grade)) {
+            $this->grades->add($grade);
+            $grade->setSchool($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGrade(Grade $grade): static
+    {
+        if ($this->grades->removeElement($grade)) {
+            // set the owning side to null (unless already changed)
+            if ($grade->getSchool() === $this) {
+                $grade->setSchool(null);
+            }
+        }
+
+        return $this;
     }
 }

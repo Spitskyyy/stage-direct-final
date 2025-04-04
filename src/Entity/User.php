@@ -57,6 +57,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Speciality $Speciality = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $is_verified_student = null;
+
     public function __construct()
     {
         $this->internships = new ArrayCollection();
@@ -235,6 +238,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         } else {
             return "inconnu";
         }
+    }
+
+    public function isVerifiedStudent(): ?bool
+    {
+        return $this->is_verified_student;
+    }
+
+    public function setIsVerifiedStudent(?bool $is_verified_student): static
+    {
+        $this->is_verified_student = $is_verified_student;
+
+        return $this;
     }
 
 
