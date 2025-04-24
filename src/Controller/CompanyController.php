@@ -68,9 +68,15 @@ final class CompanyController extends AbstractController
     {
         $this->denyAccessUnlessVerified($this->getUser());
 
+        $limit = 10; // Nombre d'éléments par page
+        $page = (int) $request->query->get('page', 1); // Page actuelle
+        $offset = ($page - 1) * $limit;
+
+        // Construction de la requête de base
         $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c')
             ->where('c.is_verified = true');
 
+        // Gestion des filtres de recherche
         $searchTerms = $request->query->all('search');
         $searchFields = $request->query->all('search_field');
         $numericFields = ['phone', 'zip'];
@@ -79,8 +85,7 @@ final class CompanyController extends AbstractController
             foreach ($searchTerms as $index => $term) {
                 if (!empty($term) && isset($searchFields[$index])) {
                     $field = $searchFields[$index];
-
-                    if (in_array($field, $numericFields)&& $field != "zip" && $field != "phone") {
+                    if (in_array($field, $numericFields) && $field != "zip" && $field != "phone") {
                         $queryBuilder->andWhere("c.$field = :search$index")
                             ->setParameter("search$index", $term);
                     } else {
@@ -91,12 +96,24 @@ final class CompanyController extends AbstractController
             }
         }
 
-        $companies = $queryBuilder->getQuery()->getResult();
+        // Compte total pour la pagination
+        $totalRecords = count($queryBuilder->getQuery()->getResult());
+        $totalPages = ceil($totalRecords / $limit);
+
+        // Ajout de la pagination à la requête
+        $companies = $queryBuilder
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
 
         return $this->render('company/index.html.twig', [
             'companies' => $companies,
-            'search' => $searchTerms,
-            'search_field' => $searchFields,
+            'current_page' => $page,
+            'total_pages' => $totalPages,
+            'total_records' => $totalRecords,
+            'search_terms' => $searchTerms,
+            'search_fields' => $searchFields
         ]);
     }
 
@@ -210,47 +227,72 @@ final class CompanyController extends AbstractController
     }
 
     #[Route('/export', name: 'app_company_export', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
-    public function exportToExcel(CompanyRepository $companyRepository): StreamedResponse
-    {
-        $this->denyAccessUnlessVerified($this->getUser());
+#[IsGranted('ROLE_USER')]
+public function exportToExcel(Request $request, EntityManagerInterface $entityManager): StreamedResponse
+{
+    $this->denyAccessUnlessVerified($this->getUser());
 
-        $companies = $companyRepository->findAll();
+    // Récupération des critères de recherche
+    $searchTerms = $request->query->all('search');
+    $searchFields = $request->query->all('search_field');
+    
+    // Construction de la requête avec les mêmes filtres que l'index
+    $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c')
+        ->where('c.is_verified = true');
 
-        $response = new StreamedResponse(function () use ($companies) {
-            $spreadsheet = new Spreadsheet();
-            $sheet = $spreadsheet->getActiveSheet();
-
-            $sheet->setCellValue('A1', 'Id');
-            $sheet->setCellValue('B1', 'Nom');
-            $sheet->setCellValue('C1', 'Adresse');
-            $sheet->setCellValue('D1', 'Ville');
-            $sheet->setCellValue('E1', 'Code postal');
-            $sheet->setCellValue('F1', 'Pays');
-            $sheet->setCellValue('G1', 'Téléphone');
-            $sheet->setCellValue('H1', 'Email');
-
-            $row = 2;
-            foreach ($companies as $company) {
-                $sheet->setCellValue('A' . $row, $company->getId());
-                $sheet->setCellValue('B' . $row, $company->getName());
-                $sheet->setCellValue('C' . $row, $company->getAddress());
-                $sheet->setCellValue('D' . $row, $company->getCity());
-                $sheet->setCellValue('E' . $row, $company->getZip());
-                $sheet->setCellValue('F' . $row, $company->getCountry());
-                $sheet->setCellValue('G' . $row, $company->getPhone());
-                $sheet->setCellValue('H' . $row, $company->getEmail());
-                $row++;
+    if ($searchTerms && $searchFields) {
+        foreach ($searchTerms as $index => $term) {
+            if (!empty($term) && isset($searchFields[$index])) {
+                $field = $searchFields[$index];
+                if (in_array($field, ['phone', 'zip'])) {
+                    $queryBuilder->andWhere("c.$field = :search$index")
+                        ->setParameter("search$index", $term);
+                } else {
+                    $queryBuilder->andWhere("c.$field LIKE :search$index")
+                        ->setParameter("search$index", "%{$term}%");
+                }
             }
-
-            $writer = new Xlsx($spreadsheet);
-            $writer->save('php://output');
-        });
-
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $response->headers->set('Content-Disposition', 'attachment;filename="companies.xlsx"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
-        return $response;
+        }
     }
+
+    $companies = $queryBuilder->getQuery()->getResult();
+
+    // Création du fichier Excel
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    
+    // En-têtes
+    $headers = ['ID', 'Nom', 'Adresse', 'Ville', 'Code Postal', 'Pays', 'Téléphone', 'Email', 'Vérifié'];
+    foreach ($headers as $key => $header) {
+        $sheet->setCellValue(chr(65 + $key) . '1', $header);
+    }
+    
+    // Données
+    $row = 2;
+    foreach ($companies as $company) {
+        $sheet->setCellValue('A' . $row, $company->getId());
+        $sheet->setCellValue('B' . $row, $company->getName());
+        $sheet->setCellValue('C' . $row, $company->getAddress());
+        $sheet->setCellValue('D' . $row, $company->getCity());
+        $sheet->setCellValue('E' . $row, $company->getZip());
+        $sheet->setCellValue('F' . $row, $company->getCountry());
+        $sheet->setCellValue('G' . $row, $company->getPhone());
+        $sheet->setCellValue('H' . $row, $company->getEmail());
+        $sheet->setCellValue('I' . $row, $company->isVerified() ? 'Oui' : 'Non'); // Correction ici
+        $row++;
+    }
+
+    // Création de la réponse
+    $response = new StreamedResponse(function() use ($spreadsheet) {
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+    });
+
+    // En-têtes HTTP
+    $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    $response->headers->set('Content-Disposition', 'attachment;filename="companies.xlsx"');
+    $response->headers->set('Cache-Control', 'max-age=0');
+
+    return $response;
+}
 }

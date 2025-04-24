@@ -1,12 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Company index{% endblock %}
+{% block title %}Company index
+{% endblock %}
 
 {% block body %}
 	<br><br><br>
 
 	<div class="min-h-screen flex items-center justify-center">
-		<div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
+		<div
+			class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
 
 			<!-- Barre de recherche -->
 			<div class="flex flex-wrap items-center justify-between pb-4">
@@ -38,6 +40,8 @@
 				<a href="{{ path('app_company_export_pdf') }}" class="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
 					Exporter en PDF
 				</a>
+
+				<a href="{{ path('app_company_export') }}?{{ app.request.queryString }}" class="btn btn-primary">Exporter en Excel</a>
 			</div>
 
 			<!-- Tableau des entreprises -->
@@ -81,19 +85,43 @@
 					{% endfor %}
 				</tbody>
 			</table>
+
+			{# Pagination #}
+			<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if current_page > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path('app_company_index', app.request.query.all|merge({'page': current_page - 1})) }}">Précédent</a>
+            </li>
+        {% endif %}
+
+        {% for i in 1..total_pages %}
+            <li class="page-item {{ current_page == i ? 'active' : '' }}">
+                <a class="page-link" href="{{ path('app_company_index', app.request.query.all|merge({'page': i})) }}">{{ i }}</a>
+            </li>
+        {% endfor %}
+
+        {% if current_page < total_pages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path('app_company_index', app.request.query.all|merge({'page': current_page + 1})) }}">Suivant</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
 		</div>
 	</div>
 
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
-			const searchContainer = document.getElementById("search-container");
-			const addButton = document.getElementById("add-search");
+const searchContainer = document.getElementById("search-container");
+const addButton = document.getElementById("add-search");
 
-			addButton.addEventListener("click", function () {
-				const newSearch = document.createElement("div");
-				newSearch.classList.add("search-group", "flex", "gap-2", "mb-2");
+addButton.addEventListener("click", function () {
+const newSearch = document.createElement("div");
+newSearch.classList.add("search-group", "flex", "gap-2", "mb-2");
 
-				newSearch.innerHTML = `
+newSearch.innerHTML = `
 					<input type="text" name="search[]" class="block p-2 text-sm border rounded-lg w-80 focus:ring-blue-500 focus:border-blue-500" placeholder="Recherche">
 					<select name="search_field[]" class="p-2 text-sm border rounded-lg w-48 focus:ring-blue-500 focus:border-blue-500">
 						<option value="name">Nom</option>
@@ -108,12 +136,12 @@
 					<button type="button" class="remove-search ml-2 p-1 bg-red-500 text-white rounded">-</button>
 				`;
 
-				searchContainer.appendChild(newSearch);
+searchContainer.appendChild(newSearch);
 
-				newSearch.querySelector(".remove-search").addEventListener("click", function () {
-					searchContainer.removeChild(newSearch);
-				});
-			});
-		});
+newSearch.querySelector(".remove-search").addEventListener("click", function () {
+searchContainer.removeChild(newSearch);
+});
+});
+});
 	</script>
 {% endblock %}
