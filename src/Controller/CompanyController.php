@@ -31,36 +31,57 @@ final class CompanyController extends AbstractController
     }
 
     #[Route('/company/export-pdf', name: 'app_company_export_pdf')]
+public function exportPdf(Request $request, EntityManagerInterface $entityManager): Response
+{
+    // Récupération des critères de recherche
+    $searchTerms = $request->query->all('search');
+    $searchFields = $request->query->all('search_field');
+    
+    // Construction de la requête avec les mêmes filtres que l'index
+    $queryBuilder = $entityManager->getRepository(Company::class)->createQueryBuilder('c')
+        ->where('c.is_verified = true');
 
-    public function exportPdf(EntityManagerInterface $entityManager): Response
-    {
-        // Remplacer getDoctrine() par l'EntityManagerInterface injecté
-        $companies = $entityManager->getRepository(Company::class)->findAll();
-
-        // Configure Dompdf
-        $options = new Options();
-        $options->set('defaultFont', 'Arial');
-
-        $dompdf = new Dompdf($options);
-
-        // Générer le HTML pour le PDF
-        $html = $this->renderView('company/export_pdf.html.twig', [
-            'companies' => $companies,
-        ]);
-
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-
-        return new Response(
-            $dompdf->output(),
-            200,
-            [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="companies.pdf"',
-            ]
-        );
+    if ($searchTerms && $searchFields) {
+        foreach ($searchTerms as $index => $term) {
+            if (!empty($term) && isset($searchFields[$index])) {
+                $field = $searchFields[$index];
+                if (in_array($field, ['phone', 'zip'])) {
+                    $queryBuilder->andWhere("c.$field = :search$index")
+                        ->setParameter("search$index", $term);
+                } else {
+                    $queryBuilder->andWhere("c.$field LIKE :search$index")
+                        ->setParameter("search$index", "%{$term}%");
+                }
+            }
+        }
     }
+
+    $companies = $queryBuilder->getQuery()->getResult();
+
+    // Configure Dompdf
+    $options = new Options();
+    $options->set('defaultFont', 'Arial');
+
+    $dompdf = new Dompdf($options);
+
+    // Générer le HTML pour le PDF
+    $html = $this->renderView('company/export_pdf.html.twig', [
+        'companies' => $companies,
+    ]);
+
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'landscape');
+    $dompdf->render();
+
+    return new Response(
+        $dompdf->output(),
+        200,
+        [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="companies.pdf"' // Changed to attachment
+        ]
+    );
+}
 
     #[Route(name: 'app_company_index', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]

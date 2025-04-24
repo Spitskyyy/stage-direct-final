@@ -36,12 +36,15 @@
 					</button>
 				</form>
 
-				<!-- Bouton Export PDF -->
-				<a href="{{ path('app_company_export_pdf') }}" class="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
-					Exporter en PDF
-				</a>
-
-				<a href="{{ path('app_company_export') }}?{{ app.request.queryString }}" class="btn btn-primary">Exporter en Excel</a>
+				<!-- Boutons d'export -->
+				<div class="flex gap-4">
+				    <a href="{{ path('app_company_export_pdf') }}?{{ app.request.queryString }}" class="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
+				        Exporter en PDF
+				    </a>
+				    <a href="{{ path('app_company_export') }}?{{ app.request.queryString }}" class="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
+				        Exporter en Excel
+				    </a>
+				</div>
 			</div>
 
 			<!-- Tableau des entreprises -->
@@ -73,8 +76,8 @@
 							<td class="px-6 py-4">{{ company.email }}</td>
 							<td class="px-6 py-4">{{ company.isVerified ? 'Yes' : 'No' }}</td>
 							<td class="px-6 py-4">
-								<a href="{{ path('app_company_show', {'id': company.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Show</a>
-								<a href="{{ path('app_company_edit', {'id': company.id}) }}" class="font-medium text-green-600 dark:text-green-500 hover:underline">Edit</a>
+								<a href="{{ path('app_company_show', {'id': company.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Show</a><br/>
+								<a href="{{ path('app_company_edit', {'id': company.id}) }}" class="font-medium text-green-600 dark:text-green-500 hover:underline">Edit</a><br/>
 								{{ include('company/_delete_form.html.twig') }}
 							</td>
 						</tr>
@@ -87,23 +90,32 @@
 			</table>
 
 			{# Pagination #}
-			<nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center">
+			<nav aria-label="Page navigation" class="mt-6">
+    <ul class="flex items-center justify-center gap-2">
         {% if current_page > 1 %}
-            <li class="page-item">
-                <a class="page-link" href="{{ path('app_company_index', app.request.query.all|merge({'page': current_page - 1})) }}">Précédent</a>
+            <li>
+                <a href="{{ path('app_company_index', app.request.query.all|merge({'page': current_page - 1})) }}" 
+                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Précédent
+                </a>
             </li>
         {% endif %}
 
         {% for i in 1..total_pages %}
-            <li class="page-item {{ current_page == i ? 'active' : '' }}">
-                <a class="page-link" href="{{ path('app_company_index', app.request.query.all|merge({'page': i})) }}">{{ i }}</a>
+            <li>
+                <a href="{{ path('app_company_index', app.request.query.all|merge({'page': i})) }}" 
+                   class="px-4 py-2 text-sm font-medium {% if current_page == i %}text-blue-600 bg-blue-50 border-blue-500{% else %}text-gray-700 bg-white border-gray-300{% endif %} border rounded-lg hover:bg-gray-50">
+                    {{ i }}
+                </a>
             </li>
         {% endfor %}
 
         {% if current_page < total_pages %}
-            <li class="page-item">
-                <a class="page-link" href="{{ path('app_company_index', app.request.query.all|merge({'page': current_page + 1})) }}">Suivant</a>
+            <li>
+                <a href="{{ path('app_company_index', app.request.query.all|merge({'page': current_page + 1})) }}" 
+                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    Suivant
+                </a>
             </li>
         {% endif %}
     </ul>
