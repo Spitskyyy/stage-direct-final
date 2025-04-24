@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateurs en attente
+{% endblock %}
+
+{% block body %}
+	<h1>Utilisateurs en attente de validation</h1>
+
+	<table>
+		<thead>
+			<tr>
+				<th>Email</th>
+				<th>Nom</th>
+				<th>Prénom</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for user in pendingUsers %}
+				<tr>
+					<td>{{ user.email }}</td>
+					<td>{{ user.lastname }}</td>
+					<td>{{ user.firstname }}</td>
+
+					<td>
+						<a href="{{ path('app_user_verify', {'id': user.id}) }}" class="btn btn-success">Valider</a>
+
+						<a href="{{ path('app_user_refuse', {'id': user.id}) }}" class="btn btn-danger">Refuser</a>
+					</td>
+
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan="4">Aucun utilisateur en attente de validation.</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}
