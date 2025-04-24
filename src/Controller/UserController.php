@@ -18,42 +18,69 @@ final class UserController extends AbstractController
     #[IsGranted('ROLE_MODERATOR')]
     public function index(Request $request, UserRepository $userRepository): Response
     {
-        //return $this->redirectToRoute('app_home', [], Response::HTTP_SEE_OTHER);
-        $limit      = 10;// Nombre d'éléments par page
-        $page       = (int) $request->query->get('page', 1); // Page actuelle, par défaut 1
-        $searchTerm = $request->query->get('search', '');    // Paramètre de recherche, par défaut ''
+        $limit = 10;
+        $page = (int) $request->query->get('page', 1);
+        $searchTerm = $request->query->get('search', '');
 
-        $criteria = [];
-        // Récupération du nombre total d'éléments (en tenant compte du filtre de recherche)
-        $totalRecords = $userRepository->count($criteria);
-        $totalPages   = (int) ceil($totalRecords / $limit); // Nombre total de pages
+        $criteria = [
+            'isVerified' => true,
+            'is_verified_user' => true,
+        ];
 
-        if (empty($searchTerm)) {
-            // Pas de recherche, on affiche tout
-            $users = $userRepository->findAll($page);
-        } else {
-            // Constructeur de la requête avec recherche
-
-            if ($searchTerm) {
-                $criteria['name'] = $searchTerm; // Par exemple, rechercher par nom
-            }
-
-            // Récupération des utilisateurs pour la page actuelle, en tenant compte de la recherche
-            $users = $userRepository->searchBy($criteria);
+        if (!empty($searchTerm)) {
+            // Adaptable selon la recherche voulue
+            $criteria['lastname'] = $searchTerm;
         }
 
+        $totalRecords = $userRepository->count($criteria);
+        $totalPages = (int) ceil($totalRecords / $limit);
+        $offset = ($page - 1) * $limit;
+
+        $users = $userRepository->findBy($criteria, null, $limit, $offset);
+
         return $this->render('user/index.html.twig', [
-            'users'         => $users,
+            'users' => $users,
             'total_records' => $totalRecords,
-            'total_pages'   => $totalPages,
-            'current_page'  => $page,
-            'search_term'   => $searchTerm, // Passer le terme de recherche au template
+            'total_pages' => $totalPages,
+            'current_page' => $page,
+            'search_term' => $searchTerm,
         ]);
+    }
+
+    #[Route('/pending', name: 'app_user_pending', methods: ['GET'])]
+    public function pending(Request $request, UserRepository $userRepository): Response
+    {
+        $pendingUsers = $userRepository->findBy([
+            'isVerified' => true,
+            'is_verified_user' => false
+        ]);
+
+        return $this->render('user/pending.html.twig', [
+            'pendingUsers' => $pendingUsers,
+        ]);
+    }
+
+    #[Route('/user/{id}/verify', name: 'app_user_verify', methods: ['GET'])]
+    public function verify(User $user, EntityManagerInterface $em): Response
+    {
+        $user->setIsVerifiedUser(true);
+        $em->flush();
+    
+        return $this->redirectToRoute('app_user_index');
+    }
+    
+    #[Route('/user/{id}/refuse', name: 'app_user_refuse', methods: ['GET'])]
+    public function refuse(User $user, EntityManagerInterface $em): Response
+    {
+        $em->remove($user);
+        $em->flush();
+    
+        return $this->redirectToRoute('app_user_index');
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_MODERATOR')]
-    public function new (Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         return $this->redirectToRoute('app_register');
     }
