@@ -145,6 +145,7 @@ public function exportPdf(Request $request, EntityManagerInterface $entityManage
         $this->denyAccessUnlessVerified($this->getUser());
 
         $company = new Company();
+        $company->setCreator($this->getUser());
         $form = $this->createForm(CompanyType::class, $company);
         $form->handleRequest($request);
 
@@ -213,10 +214,14 @@ public function exportPdf(Request $request, EntityManagerInterface $entityManage
 
 
     #[Route('/company/{id}/edit', name: 'app_company_edit', methods: ['GET', 'POST'])]
-    // #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_USER')]
     public function edit(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessVerified($this->getUser());
+
+        if (!$this->isGranted('edit', $company)) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
 
         $form = $this->createForm(CompanyType::class, $company);
         $form->handleRequest($request);
@@ -238,6 +243,10 @@ public function exportPdf(Request $request, EntityManagerInterface $entityManage
     public function delete(Request $request, Company $company, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessVerified($this->getUser());
+
+        if (!$this->isGranted('edit', $company)) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
 
         if ($this->isCsrfTokenValid('delete' . $company->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($company);

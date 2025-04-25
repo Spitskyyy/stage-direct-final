@@ -5,11 +5,14 @@ namespace App\Entity;
 use App\Repository\InternshipRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Traits\CreatorTrait;
 
 #[ORM\Entity(repositoryClass: InternshipRepository::class)]
 #[ORM\Table(name: 'tbl_internship')]
 class Internship
 {
+    use CreatorTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

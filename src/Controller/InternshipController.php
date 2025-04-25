@@ -16,6 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[Route('/internship')]
 final class InternshipController extends AbstractController
@@ -88,6 +89,7 @@ final class InternshipController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $internship = new Internship();
+        $internship->setCreator($this->getUser());
         $form = $this->createForm(InternshipType::class, $internship);
         $form->handleRequest($request);
 
@@ -108,6 +110,8 @@ final class InternshipController extends AbstractController
 
     #[Route('/pending', name: 'app_internship_pending', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
+    #[Route('/pending', name: 'internship_pending')]
+    #[IsGranted('ROLE_TEACHER')]
     public function pending(EntityManagerInterface $entityManager): Response
     {
         $internships = $entityManager->getRepository(Internship::class)
@@ -118,8 +122,21 @@ final class InternshipController extends AbstractController
         ]);
     }
 
+    #[Route('/verify/{id}', name: 'internship_verify')]
+    #[IsGranted('ROLE_TEACHER')]
+    public function verify(Internship $internship, EntityManagerInterface $entityManager): Response
+    {
+        $internship->setIsVerified(true);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Stage vérifié avec succès.');
+
+        return $this->redirectToRoute('app_internship_index');
+    }
+
+
     #[Route('/{id}', name: 'app_internship_show', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_TEACHER')]
     public function show(Internship $internship): Response
     {
         return $this->render('internship/show.html.twig', [
@@ -131,6 +148,11 @@ final class InternshipController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function edit(Request $request, Internship $internship, EntityManagerInterface $entityManager): Response
     {
+        // Vérifie les permissions avec le voter
+        if (!$this->isGranted('edit', $internship)) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
+
         $form = $this->createForm(InternshipType::class, $internship);
         $form->handleRequest($request);
 
@@ -149,7 +171,11 @@ final class InternshipController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function delete(Request $request, Internship $internship, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$internship->getId(), $request->request->get('_token'))) {
+        if (!$this->isGranted('edit', $internship)) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $internship->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($internship);
             $entityManager->flush();
         }
@@ -231,5 +257,7 @@ final class InternshipController extends AbstractController
         $response->headers->set('Cache-Control', 'max-age=0');
 
         return $response;
+    }
+        return $this->redirectToRoute('app_internship_index', [], Response::HTTP_SEE_OTHER);
     }
 }
