@@ -15,11 +15,17 @@
                         <div class="search-group flex gap-2 mb-2">
                             <input type="text" name="search[]" class="block p-2 text-sm border rounded-lg w-80 focus:ring-blue-500 focus:border-blue-500" placeholder="Recherche">
                             <select name="search_field[]" class="p-2 text-sm border rounded-lg w-48 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="id">ID</option>
                                 <option value="title">Titre</option>
                                 <option value="startDate">Date de début</option>
                                 <option value="endDate">Date de fin</option>
-                                <option value="company">Entreprise</option>
+                                <option value="isVerified">Vérifié</option>
+                                <option value="intern">Stagiaire</option>
                                 <option value="school">École</option>
+                                <option value="company">Entreprise</option>
+                                <option value="visitReport">Rapport de visite</option>
+                                <option value="activityList">Liste d'activités</option>
+                                <option value="speciality">Spécialité</option>
                             </select>
                         </div>
                     </div>
@@ -158,11 +164,17 @@
                 newSearch.innerHTML = `
                     <input type="text" name="search[]" class="block p-2 text-sm border rounded-lg w-80 focus:ring-blue-500 focus:border-blue-500" placeholder="Recherche">
                     <select name="search_field[]" class="p-2 text-sm border rounded-lg w-48 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="id">ID</option>
                         <option value="title">Titre</option>
                         <option value="startDate">Date de début</option>
                         <option value="endDate">Date de fin</option>
-                        <option value="company">Entreprise</option>
+                        <option value="isVerified">Vérifié</option>
+                        <option value="intern">Stagiaire</option>
                         <option value="school">École</option>
+                        <option value="company">Entreprise</option>
+                        <option value="visitReport">Rapport de visite</option>
+                        <option value="activityList">Liste d'activités</option>
+                        <option value="speciality">Spécialité</option>
                     </select>
                     <button type="button" class="remove-search ml-2 p-1 bg-red-500 text-white rounded">-</button>
                 `;
