@@ -11,6 +11,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[Route('/activity/list')]
 final class ActivityListController extends AbstractController
@@ -25,9 +26,11 @@ final class ActivityListController extends AbstractController
     }
 
     #[Route('/new', name: 'app_activity_list_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $activityList = new ActivityList();
+        $activityList->setCreator($this->getUser());
         $form = $this->createForm(ActivityListType::class, $activityList);
         $form->handleRequest($request);
 
@@ -55,10 +58,12 @@ final class ActivityListController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_activity_list_edit', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_STUDENT')]
-
+    #[IsGranted('ROLE_USER')]
     public function edit(Request $request, ActivityList $activityList, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('edit', $activityList)) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
         $form = $this->createForm(ActivityListType::class, $activityList);
         $form->handleRequest($request);
 
@@ -75,10 +80,12 @@ final class ActivityListController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_activity_list_delete', methods: ['POST'])]
-    #[IsGranted('ROLE_STUDENT')]
-
+    #[IsGranted('ROLE_USER')]
     public function delete(Request $request, ActivityList $activityList, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('edit', $activityList)) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
         if ($this->isCsrfTokenValid('delete'.$activityList->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($activityList);
             $entityManager->flush();

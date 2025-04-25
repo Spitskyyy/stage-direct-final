@@ -11,6 +11,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[Route('/visit/report')]
 final class VisitReportController extends AbstractController
@@ -31,6 +32,7 @@ final class VisitReportController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $visitReport = new VisitReport();
+        $visitReport->setCreator($this->getUser());
         $form = $this->createForm(VisitReportType::class, $visitReport);
         $form->handleRequest($request);
 
@@ -62,6 +64,9 @@ final class VisitReportController extends AbstractController
 
     public function edit(Request $request, VisitReport $visitReport, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('edit', $visitReport)) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
         $form = $this->createForm(VisitReportType::class, $visitReport);
         $form->handleRequest($request);
 
@@ -82,6 +87,9 @@ final class VisitReportController extends AbstractController
 
     public function delete(Request $request, VisitReport $visitReport, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('edit', $visitReport)) {
+            throw new AccessDeniedException('Accès refusé.');
+        }
         if ($this->isCsrfTokenValid('delete'.$visitReport->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($visitReport);
             $entityManager->flush();

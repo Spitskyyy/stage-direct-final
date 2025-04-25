@@ -5,11 +5,14 @@ namespace App\Entity;
 use App\Repository\VisitReportRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Traits\CreatorTrait;
 
 #[ORM\Entity(repositoryClass: VisitReportRepository::class)]
 #[ORM\Table(name: 'tbl_visit_report')]
 class VisitReport
 {
+    use CreatorTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
