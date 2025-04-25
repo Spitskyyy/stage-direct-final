@@ -258,6 +258,4 @@ final class InternshipController extends AbstractController
 
         return $response;
     }
-        return $this->redirectToRoute('app_internship_index', [], Response::HTTP_SEE_OTHER);
-    }
 }

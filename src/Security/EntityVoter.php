@@ -2,43 +2,42 @@
 
 namespace App\Security;
 
-use App\Entity\Internship;
-use App\Entity\Company;
-use App\Entity\ActivityList;
-use App\Entity\VisitReport;
-use App\Entity\User;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class EntityVoter extends Voter
 {
+    private $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     const EDIT = 'edit';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if ($attribute !== self::EDIT) {
-            return false;
-        }
-
-        return $subject instanceof Internship
-            || $subject instanceof Company
-            || $subject instanceof ActivityList
-            || $subject instanceof VisitReport;
+        return $attribute === self::EDIT && method_exists($subject, 'getCreator');
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
-        if (!$user instanceof User) {
-            return false;
-        }
 
-        // Les professeurs peuvent tout modifier
-        if (in_array('ROLE_TEACHER', $user->getRoles())) {
+        // Les rôles supérieurs ont toujours accès
+        if ($this->security->isGranted('ROLE_TEACHER') || 
+            $this->security->isGranted('ROLE_MODERATOR') || 
+            $this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }
 
-        // Le créateur peut modifier
-        return $subject->getCreator() === $user;
+        // Pour les étudiants, vérifier s'ils sont le créateur
+        if ($this->security->isGranted('ROLE_STUDENT')) {
+            return $subject->getCreator() === $user;
+        }
+
+        return false;
     }
 }
