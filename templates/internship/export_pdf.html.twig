@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Liste des stages</title>
+        <style>
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid black; padding: 5px; text-align: left; }
+            th { background-color: #f2f2f2; }
+        </style>
+    </head>
+    <body>
+        <h1>Liste des stages</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Intern</th>
+                    <th>School</th>
+                    <th>Company</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for internship in internships %}
+                    <tr>
+                        <td>{{ internship.id }}</td>
+                        <td>{{ internship.title }}</td>
+                        <td>{{ internship.startDate ? internship.startDate|date('Y-m-d') : '' }}</td>
+                        <td>{{ internship.endDate ? internship.endDate|date('Y-m-d') : '' }}</td>
+                        <td>{{ internship.intern ? internship.intern.id : '' }}</td>
+                        <td>{{ internship.school ? internship.school.id : '' }}</td>
+                        <td>{{ internship.company ? internship.company.id : '' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

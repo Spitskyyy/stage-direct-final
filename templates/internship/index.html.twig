@@ -1,112 +1,178 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Internship index
-{% endblock %}
+{% block title %}Internship index{% endblock %}
 
 {% block body %}
+    <br><br><br>
 
-	<br><br><br>
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
+            
+            <!-- Barre de recherche -->
+            <div class="flex flex-wrap items-center justify-between pb-4">
+                <form action="{{ path('app_internship_index') }}" method="get" class="flex flex-wrap items-center gap-4">
+                    <div id="search-container">
+                        <div class="search-group flex gap-2 mb-2">
+                            <input type="text" name="search[]" class="block p-2 text-sm border rounded-lg w-80 focus:ring-blue-500 focus:border-blue-500" placeholder="Recherche">
+                            <select name="search_field[]" class="p-2 text-sm border rounded-lg w-48 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="title">Titre</option>
+                                <option value="startDate">Date de début</option>
+                                <option value="endDate">Date de fin</option>
+                                <option value="company">Entreprise</option>
+                                <option value="school">École</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" id="add-search" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                        +
+                    </button>
+                    <button type="submit" class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                        Rechercher
+                    </button>
+                </form>
 
-	<div class="min-h-screen flex items-center justify-center">
-		<div class="relative overflow-x-auto shadow-md sm:rounded-lg p-4 w-full max-w-8xl">
-			<table id="internship-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-				<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-					<tr>
-						<th scope="col" class="px-6 py-3">Id</th>
-						<th scope="col" class="px-6 py-3">Intern ID</th>
-						<th scope="col" class="px-6 py-3">School ID</th>
-						<th scope="col" class="px-6 py-3">Company ID</th>
-						<th scope="col" class="px-6 py-3">Title</th>
-						<th scope="col" class="px-6 py-3">Start Date</th>
-						<th scope="col" class="px-6 py-3">End Date</th>
-						<th scope="col" class="px-6 py-3">Liste des activités</th>
-						<th scope="col" class="px-6 py-3">Voir Rapport de Visite</th>
-						<th scope="col" class="px-6 py-3">Actions</th>
-					</tr>
-				</thead>
-				<tbody id="table-body">
-					{% for internship in internships %}
-						<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-							<td class="px-6 py-4">{{ internship.id }}</td>
+                <!-- Boutons d'export -->
+                <div class="flex gap-4">
+                    <a href="{{ path('app_internship_export_pdf') }}?{{ app.request.queryString }}" class="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                        Exporter en PDF
+                    </a>
+                    <a href="{{ path('app_internship_export') }}?{{ app.request.queryString }}" class="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                        Exporter en Excel
+                    </a>
+                </div>
+            </div>
 
-							{# Accès aux relations via les objets liés #}
-							<td class="px-6 py-4">{{ internship.intern ? internship.intern.id : 'N/A' }}</td>
-							<td class="px-6 py-4">{{ internship.school ? internship.school.id : 'N/A' }}</td>
-							<td class="px-6 py-4">{{ internship.company ? internship.company.id : 'N/A' }}</td>
+            <!-- Tableau des stages -->
+            <table id="internship-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Id</th>
+                        <th scope="col" class="px-6 py-3">Title</th>
+                        <th scope="col" class="px-6 py-3">Start Date</th>
+                        <th scope="col" class="px-6 py-3">End Date</th>
+                        <th scope="col" class="px-6 py-3">Is Verified</th>
+                        <th scope="col" class="px-6 py-3">Intern</th>
+                        <th scope="col" class="px-6 py-3">School</th>
+                        <th scope="col" class="px-6 py-3">Company</th>
+                        <th scope="col" class="px-6 py-3">Visit Report</th>
+                        <th scope="col" class="px-6 py-3">Activity List</th>
+                        <th scope="col" class="px-6 py-3">Speciality</th>
+                        <th scope="col" class="px-6 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for internship in internships %}
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4">{{ internship.id }}</td>
+                            <td class="px-6 py-4">{{ internship.title }}</td>
+                            <td class="px-6 py-4">{{ internship.startDate ? internship.startDate|date('Y-m-d') : '' }}</td>
+                            <td class="px-6 py-4">{{ internship.endDate ? internship.endDate|date('Y-m-d') : '' }}</td>
+                            <td class="px-6 py-4">{{ internship.isVerified ? 'Yes' : 'No' }}</td>
+                            <td class="px-6 py-4">{{ internship.intern ? internship.intern.email : '' }}</td>
+                            <td class="px-6 py-4">{{ internship.school ? internship.school.name : '' }}</td>
+                            <td class="px-6 py-4">{{ internship.company ? internship.company.name : '' }}</td>
+                            <td class="px-6 py-4">
+                                {% if internship.visitreport %}
+                                    <a href="{{ path('app_visit_report_show', {'id': internship.visitreport.id}) }}" 
+                                       class="text-blue-600 hover:text-blue-800 hover:underline">
+                                        Voir le rapport
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('app_visit_report_new') }}" 
+                                       class="text-gray-600 hover:text-gray-800 hover:underline">
+                                        Créer un rapport
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                {% if internship.activitylist %}
+                                    <a href="{{ path('app_activity_list_show', {'id': internship.activitylist.id}) }}" 
+                                       class="text-blue-600 hover:text-blue-800 hover:underline">
+                                        Voir les activités
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('app_activity_list_new') }}" 
+                                       class="text-gray-600 hover:text-gray-800 hover:underline">
+                                        Créer une liste
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">{{ internship.speciality ? internship.speciality.name : '' }}</td>
+                            <td class="px-6 py-4 flex gap-2">
+                                <a href="{{ path('app_internship_show', {'id': internship.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Show</a><br/>
+                                <a href="{{ path('app_internship_edit', {'id': internship.id}) }}" class="font-medium text-green-600 dark:text-green-500 hover:underline">Edit</a><br/>
+                                {{ include('internship/_delete_form.html.twig') }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="12" class="px-6 py-4 text-center">Aucun stage trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-							<td class="px-6 py-4">{{ internship.title }}</td>
-							<td class="px-6 py-4">{{ internship.startDate ? internship.startDate|date('Y-m-d H:i:s') : '' }}</td>
-							<td class="px-6 py-4">{{ internship.endDate ? internship.endDate|date('Y-m-d H:i:s') : '' }}</td>
+            {# Pagination #}
+            <nav aria-label="Page navigation" class="mt-6">
+                <ul class="flex items-center justify-center gap-2">
+                    {% if current_page > 1 %}
+                        <li>
+                            <a href="{{ path('app_internship_index', app.request.query.all|merge({'page': current_page - 1})) }}" 
+                               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                Précédent
+                            </a>
+                        </li>
+                    {% endif %}
 
-							<td class="px-6 py-4">
-								{% if internship.activityList %}
-									<a href="{{ path('app_activity_list_show', {'id': internship.activityList.id}) }}" class="font-medium text-purple-600 dark:text-purple-500 hover:underline">
-										Voir Activité
-									</a>
-								{% else %}
-									N/A
-								{% endif %}
-							</td>
+                    {% for i in 1..total_pages %}
+                        <li>
+                            <a href="{{ path('app_internship_index', app.request.query.all|merge({'page': i})) }}" 
+                               class="px-4 py-2 text-sm font-medium {% if current_page == i %}text-blue-600 bg-blue-50 border-blue-500{% else %}text-gray-700 bg-white border-gray-300{% endif %} border rounded-lg hover:bg-gray-50">
+                                {{ i }}
+                            </a>
+                        </li>
+                    {% endfor %}
 
-							<td class="px-6 py-4">
-								{% if internship.visitReport %}
-									<a href="{{ path('app_visit_report_show', {'id': internship.visitReport.id}) }}" class="font-medium text-green-600 dark:text-green-500 hover:underline">
-										Voir Rapport de Visite
-									</a>
-								{% else %}
-									N/A
-								{% endif %}
-							</td>
+                    {% if current_page < total_pages %}
+                        <li>
+                            <a href="{{ path('app_internship_index', app.request.query.all|merge({'page': current_page + 1})) }}" 
+                               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                                Suivant
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
 
-							<td class="px-6 py-4">
-								<a href="{{ path('app_internship_show', {'id': internship.id}) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Show</a>
-								<a href="{{ path('app_internship_edit', {'id': internship.id}) }}" class="font-medium text-blue-600 dark:text-green-500 hover:underline">Edit</a>
-								{{ include('internship/_delete_form.html.twig') }}
-							</td>
-						</tr>
-					{% else %}
-						<tr>
-							<td colspan="10" class="px-6 py-4 text-center">Aucun stage vérifié pour le moment.</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchContainer = document.getElementById("search-container");
+            const addButton = document.getElementById("add-search");
 
+            addButton.addEventListener("click", function () {
+                const newSearch = document.createElement("div");
+                newSearch.classList.add("search-group", "flex", "gap-2", "mb-2");
 
-			<br>
+                newSearch.innerHTML = `
+                    <input type="text" name="search[]" class="block p-2 text-sm border rounded-lg w-80 focus:ring-blue-500 focus:border-blue-500" placeholder="Recherche">
+                    <select name="search_field[]" class="p-2 text-sm border rounded-lg w-48 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="title">Titre</option>
+                        <option value="startDate">Date de début</option>
+                        <option value="endDate">Date de fin</option>
+                        <option value="company">Entreprise</option>
+                        <option value="school">École</option>
+                    </select>
+                    <button type="button" class="remove-search ml-2 p-1 bg-red-500 text-white rounded">-</button>
+                `;
 
-			{# <button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
-															            <a href="{{ path('app_internship_pdf') }}"
-															            class="btn btn-primary">Exporter en PDF</a>
-															        </button> #}
+                searchContainer.appendChild(newSearch);
 
-			<button type="button" class="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2">
-				<a href="{{ path('app_internship_new') }}" class="btn btn-primary">
-					Ajouter un stage
-				</a>
-			</button>
-
-			<!-- Pagination -->
-			<nav class="flex items-center justify-between pt-4" aria-label="Table navigation">
-				<span class="text-sm font-normal text-gray-500 dark:text-gray-400 block w-full md:inline md:w-auto">Showing
-					<span class="font-semibold text-gray-900 dark:text-gray-400">{{ (current_page - 1) * 10 + 1 }}-{{ current_page * 10 }}</span>
-					of
-					<span class="font-semibold text-gray-900 dark:text-gray-400">{{ total_records }}</span>
-				</span>
-				<ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-					<li>
-						<a href="{{ path('app_internship_index', { 'page': current_page - 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == 1 %} disabled {% endif %}>Previous</a>
-					</li>
-					{% for page in 1..total_pages %}
-						<li>
-							<a href="{{ path('app_internship_index', { 'page': page, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ page }}</a>
-						</li>
-					{% endfor %}
-					<li>
-						<a href="{{ path('app_internship_index', { 'page': current_page + 1, 'search': search_term }) }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" {% if current_page == total_pages %} disabled {% endif %}>Next</a>
-					</li>
-				</ul>
-			</nav>
-		</div>
-	</div>
+                newSearch.querySelector(".remove-search").addEventListener("click", function () {
+                    searchContainer.removeChild(newSearch);
+                });
+            });
+        });
+    </script>
 {% endblock %}
