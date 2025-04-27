@@ -28,11 +28,12 @@ final class InternshipController extends AbstractController
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
         $limit = 10;
-        $page = (int) $request->query->get('page', 1);
-        
+        $page = max(1, $request->query->getInt('page', 1));
+        $offset = ($page - 1) * $limit;
+
         // Récupération des paramètres de recherche
-        $searchTerm = $request->query->get('search');
-        $searchField = $request->query->get('search_field', 'title');
+        $searchTerms = $request->query->all('search');
+        $searchFields = $request->query->all('search_field');
 
         // Construction de la requête
         $queryBuilder = $entityManager->getRepository(Internship::class)->createQueryBuilder('i')
@@ -40,28 +41,43 @@ final class InternshipController extends AbstractController
             ->leftJoin('i.school', 's')
             ->where('i.is_verified = true');
 
-        if ($searchTerm) {
-            switch ($searchField) {
-                case 'title':
-                    $queryBuilder->andWhere('i.title LIKE :searchTerm')
-                        ->setParameter('searchTerm', "%{$searchTerm}%");
-                    break;
-                case 'startDate':
-                    $queryBuilder->andWhere('i.start_date = :searchDate')
-                        ->setParameter('searchDate', new \DateTime($searchTerm));
-                    break;
-                case 'endDate':
-                    $queryBuilder->andWhere('i.end_date = :searchDate')
-                        ->setParameter('searchDate', new \DateTime($searchTerm));
-                    break;
-                case 'company':
-                    $queryBuilder->andWhere('c.name LIKE :searchTerm')
-                        ->setParameter('searchTerm', "%{$searchTerm}%");
-                    break;
-                case 'school':
-                    $queryBuilder->andWhere('s.name LIKE :searchTerm')
-                        ->setParameter('searchTerm', "%{$searchTerm}%");
-                    break;
+        // Application des filtres de recherche
+        if (!empty($searchTerms) && !empty($searchFields)) {
+            foreach ($searchTerms as $index => $term) {
+                if (!empty($term) && isset($searchFields[$index])) {
+                    switch ($searchFields[$index]) {
+                        case 'title':
+                            $queryBuilder->andWhere('i.title LIKE :searchTerm' . $index)
+                                ->setParameter('searchTerm' . $index, "%{$term}%");
+                            break;
+                        case 'startDate':
+                            try {
+                                $date = new \DateTime($term);
+                                $queryBuilder->andWhere('i.start_date = :startDate' . $index)
+                                    ->setParameter('startDate' . $index, $date);
+                            } catch (\Exception $e) {
+                                // Gérer l'erreur de date invalide
+                            }
+                            break;
+                        case 'endDate':
+                            try {
+                                $date = new \DateTime($term);
+                                $queryBuilder->andWhere('i.end_date = :endDate' . $index)
+                                    ->setParameter('endDate' . $index, $date);
+                            } catch (\Exception $e) {
+                                // Gérer l'erreur de date invalide
+                            }
+                            break;
+                        case 'company':
+                            $queryBuilder->andWhere('c.name LIKE :company' . $index)
+                                ->setParameter('company' . $index, "%{$term}%");
+                            break;
+                        case 'school':
+                            $queryBuilder->andWhere('s.name LIKE :school' . $index)
+                                ->setParameter('school' . $index, "%{$term}%");
+                            break;
+                    }
+                }
             }
         }
 
@@ -71,7 +87,7 @@ final class InternshipController extends AbstractController
 
         // Ajout de la pagination
         $internships = $queryBuilder
-            ->setFirstResult(($page - 1) * $limit)
+            ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -81,8 +97,8 @@ final class InternshipController extends AbstractController
             'current_page' => $page,
             'total_pages' => $totalPages,
             'total_records' => $totalRecords,
-            'search_terms' => [$searchTerm],
-            'search_fields' => [$searchField]
+            'search_terms' => $searchTerms,
+            'search_fields' => $searchFields
         ]);
     }
 
