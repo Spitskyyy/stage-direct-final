@@ -38,6 +38,9 @@
 
 				<!-- Boutons d'export -->
 				<div class="flex gap-4">
+				    <a href="{{ path('app_company_new') }}" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
+				        Ajouter une entreprise
+				    </a>
 				    <a href="{{ path('app_company_export_pdf') }}?{{ app.request.queryString }}" class="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
 				        Exporter en PDF
 				    </a>
