@@ -70,7 +70,8 @@ final class ActivityListController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_activity_list_index', [], Response::HTTP_SEE_OTHER);
+            // Redirection vers la page show de la liste d'activités modifiée
+            return $this->redirectToRoute('app_activity_list_show', ['id' => $activityList->getId()]);
         }
 
         return $this->render('activity_list/edit.html.twig', [

@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use App\Entity\VisitReport;
+use App\Entity\ActivityList;
 
 #[Route('/internship')]
 final class InternshipController extends AbstractController
@@ -94,7 +96,25 @@ final class InternshipController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Créer un nouveau rapport de visite vide
+            $visitReport = new VisitReport();
+            $visitReport->setIsVerified(false);
+            $visitReport->setCreator($this->getUser());
+            $visitReport->setInternship($internship);
+            $entityManager->persist($visitReport);
+
+            // Créer une nouvelle liste d'activités vide
+            $activityList = new ActivityList();
+            $activityList->setIsVerified(false);
+            $activityList->setCreator($this->getUser());
+            $activityList->setInternship($internship);
+            $entityManager->persist($activityList);
+
+            // Lier les objets au stage
+            $internship->setVisitreport($visitReport);
+            $internship->setActivitylist($activityList);
             $internship->setIsVerified(false);
+
             $entityManager->persist($internship);
             $entityManager->flush();
 
@@ -134,9 +154,29 @@ final class InternshipController extends AbstractController
         return $this->redirectToRoute('app_internship_index');
     }
 
+    #[Route('/refuse/{id}', name: 'internship_refuse')]
+    #[IsGranted('ROLE_TEACHER')]
+    public function refuse(Internship $internship, EntityManagerInterface $entityManager): Response
+    {
+        // Supprime le rapport de visite et la liste d'activités associés
+        if ($internship->getVisitreport()) {
+            $entityManager->remove($internship->getVisitreport());
+        }
+        if ($internship->getActivitylist()) {
+            $entityManager->remove($internship->getActivitylist());
+        }
+        
+        // Supprime le stage
+        $entityManager->remove($internship);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Stage refusé et supprimé avec succès.');
+
+        return $this->redirectToRoute('app_internship_index');
+    }
 
     #[Route('/{id}', name: 'app_internship_show', methods: ['GET'])]
-    #[IsGranted('ROLE_TEACHER')]
+    #[IsGranted('ROLE_USER')] // <- Maintenant tous les utilisateurs peuvent voir les stages
     public function show(Internship $internship): Response
     {
         return $this->render('internship/show.html.twig', [

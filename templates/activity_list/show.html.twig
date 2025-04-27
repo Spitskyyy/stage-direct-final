@@ -1,30 +1,67 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ActivityList{% endblock %}
+{% block title %}Liste d'activités{% endblock %}
 
 {% block body %}
-    <h1>ActivityList</h1>
+<div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Liste d'activités</h1>
+            
+            {% if is_granted('edit', activity_list) %}
+                <div class="flex gap-2">
+                    <a href="{{ path('app_activity_list_edit', {'id': activity_list.id}) }}" 
+                       class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                        Modifier
+                    </a>
+                </div>
+            {% endif %}
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ activity_list.id }}</td>
-            </tr>
-            <tr>
-                <th>Contained</th>
-                <td>{{ activity_list.contained|raw }}</td>
-            </tr>
-            <tr>
-                <th>Is_verified</th>
-                <td>{{ activity_list.isVerified ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg space-y-6">
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Stage associé</h3>
+                    <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                        {{ activity_list.internship ? activity_list.internship.title : 'Non assigné' }}
+                    </p>
+                </div>
 
-    <a href="{{ path('app_activity_list_index') }}">back to list</a>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Statut</h3>
+                    <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                        {% if activity_list.isVerified %}
+                            <span class="text-green-600">Vérifié</span>
+                        {% else %}
+                            <span class="text-red-600">Non vérifié</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
 
-    <a href="{{ path('app_activity_list_edit', {'id': activity_list.id}) }}">edit</a>
+            <div>
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Titre</h3>
+                <p class="text-gray-900 dark:text-white">{{ activity_list.title }}</p>
+            </div>
 
-    {{ include('activity_list/_delete_form.html.twig') }}
+            <div>
+                <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Contenu</h3>
+                <div class="prose dark:prose-invert max-w-none">
+                    {{ activity_list.contained|raw }}
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between mt-6">
+            <a href="{{ path('app_internship_show', {'id': activity_list.internship.id}) }}" 
+               class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                Retour au stage
+            </a>
+
+            {% if is_granted('ROLE_ADMIN') %}
+                {{ include('activity_list/_delete_form.html.twig') }}
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

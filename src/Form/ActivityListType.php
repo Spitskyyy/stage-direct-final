@@ -16,12 +16,12 @@ class ActivityListType extends AbstractType
     {
 
         $builder
-            ->add('contained', TinymceType::class, []
-            )
+            ->add('title')
+            ->add('contained', TinymceType::class, [])
             ->add('is_verified')
             ->add('internship', EntityType::class, [
                 'class' => Internship::class,
-                'choice_label' => 'id',
+                'choice_label' => 'title',
             ]);
 
     }

@@ -35,8 +35,8 @@
                             <td class="px-6 py-4">{{ internship.intern }}</td>
                             <td class="px-6 py-4">{{ internship.school }}</td>
                             <td class="px-6 py-4">{{ internship.company }}</td>
-                            <td class="px-6 py-4">{{ internship.activityList }}</td>
-                            <td class="px-6 py-4">{{ internship.visitReport }}</td>
+                            <td class="px-6 py-4">{{ internship.activityList ? 'Liste créée' : 'Non créée' }}</td>
+                            <td class="px-6 py-4">{{ internship.visitReport ? 'Rapport créé' : 'Non créé' }}</td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-col space-y-2">
                                     <a href="{{ path('internship_verify', {'id': internship.id}) }}" 

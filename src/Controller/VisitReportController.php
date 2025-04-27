@@ -73,7 +73,8 @@ final class VisitReportController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_visit_report_index', [], Response::HTTP_SEE_OTHER);
+            // Redirection vers la page show du rapport de visite modifié
+            return $this->redirectToRoute('app_visit_report_show', ['id' => $visitReport->getId()]);
         }
 
         return $this->render('visit_report/edit.html.twig', [

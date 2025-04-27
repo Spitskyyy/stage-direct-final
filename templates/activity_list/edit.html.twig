@@ -1,13 +1,83 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit ActivityList{% endblock %}
+{% block title %}Modifier la Liste d'activités{% endblock %}
 
 {% block body %}
-    <h1>Edit ActivityList</h1>
+<div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Modifier la Liste d'activités</h1>
+        </div>
 
-    {{ include('activity_list/_form.html.twig', {'button_label': 'Update'}) }}
+        {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+            <div class="space-y-6">
+                <div>
+                    <label for="{{ form.title.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Titre
+                    </label>
+                    {{ form_widget(form.title, {
+                        'attr': {
+                            'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                        }
+                    }) }}
+                    {{ form_errors(form.title) }}
+                </div>
 
-    <a href="{{ path('app_activity_list_index') }}">back to list</a>
+                <div>
+                    <label for="{{ form.contained.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Contenu
+                    </label>
+                    {{ form_widget(form.contained, {
+                        'attr': {
+                            'class': 'tinymce bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
+                        }
+                    }) }}
+                    {{ form_errors(form.contained) }}
+                </div>
 
-    {{ include('activity_list/_delete_form.html.twig') }}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div>
+                        <label for="{{ form.is_verified.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Vérifié
+                        </label>
+                        {{ form_widget(form.is_verified, {
+                            'attr': {
+                                'class': 'w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600'
+                            }
+                        }) }}
+                        {{ form_errors(form.is_verified) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="flex justify-between items-center mt-6">
+                <a href="{{ path('app_activity_list_index') }}" 
+                   class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                    Retour à la liste
+                </a>
+
+                <button type="submit" 
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    Mettre à jour
+                </button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+{# Configuration TinyMCE #}
+<script src="{{ asset('bundles/tinymce/tinymce.min.js') }}"></script>
+<script>
+    tinymce.init({
+        selector: '.tinymce',
+        plugins: 'lists link image table code help wordcount',
+        toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | table | code',
+        height: 500,
+        menubar: false,
+        branding: false,
+        language: 'fr_FR',
+        skin: document.documentElement.classList.contains('dark') ? 'oxide-dark' : 'oxide',
+        content_css: document.documentElement.classList.contains('dark') ? 'dark' : 'default'
+    });
+</script>
 {% endblock %}

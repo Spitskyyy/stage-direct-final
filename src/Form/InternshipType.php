@@ -27,26 +27,17 @@ class InternshipType extends AbstractType
                 'widget' => 'single_text',
                 'label' => 'Date de fin'
             ])
-            ->add('is_verified')
             ->add('intern', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'id',
+                'choice_label' => 'email',
             ])
             ->add('school', EntityType::class, [
                 'class' => School::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
             ->add('company', EntityType::class, [
                 'class' => Company::class,
-                'choice_label' => 'id',
-            ])
-            ->add('visitreport', EntityType::class, [
-                'class' => VisitReport::class,
-                'choice_label' => 'id',
-            ])
-            ->add('activitylist', EntityType::class, [
-                'class' => ActivityList::class,
-                'choice_label' => 'id',
+                'choice_label' => 'name',
             ])
         ;
     }
