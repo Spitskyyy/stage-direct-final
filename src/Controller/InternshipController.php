@@ -191,6 +191,176 @@ final class InternshipController extends AbstractController
         return $this->redirectToRoute('app_internship_index');
     }
 
+    #[Route('/export-pdf', name: 'app_internship_export_pdf', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    public function exportPdf(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        // Récupération des paramètres de recherche
+        $searchTerms = $request->query->all('search');
+        $searchFields = $request->query->all('search_field');
+
+        // Construction de la requête
+        $queryBuilder = $entityManager->getRepository(Internship::class)->createQueryBuilder('i')
+            ->leftJoin('i.company', 'c')
+            ->leftJoin('i.school', 's')
+            ->where('i.is_verified = true');
+
+        // Application des filtres de recherche
+        if (!empty($searchTerms) && !empty($searchFields)) {
+            foreach ($searchTerms as $index => $term) {
+                if (!empty($term) && isset($searchFields[$index])) {
+                    switch ($searchFields[$index]) {
+                        case 'title':
+                            $queryBuilder->andWhere('i.title LIKE :searchTerm' . $index)
+                                ->setParameter('searchTerm' . $index, "%{$term}%");
+                            break;
+                        case 'startDate':
+                            try {
+                                $date = new \DateTime($term);
+                                $queryBuilder->andWhere('i.start_date = :startDate' . $index)
+                                    ->setParameter('startDate' . $index, $date);
+                            } catch (\Exception $e) {
+                                // Gérer l'erreur de date invalide
+                            }
+                            break;
+                        case 'endDate':
+                            try {
+                                $date = new \DateTime($term);
+                                $queryBuilder->andWhere('i.end_date = :endDate' . $index)
+                                    ->setParameter('endDate' . $index, $date);
+                            } catch (\Exception $e) {
+                                // Gérer l'erreur de date invalide
+                            }
+                            break;
+                        case 'company':
+                            $queryBuilder->andWhere('c.name LIKE :company' . $index)
+                                ->setParameter('company' . $index, "%{$term}%");
+                            break;
+                        case 'school':
+                            $queryBuilder->andWhere('s.name LIKE :school' . $index)
+                                ->setParameter('school' . $index, "%{$term}%");
+                            break;
+                    }
+                }
+            }
+        }
+
+        $internships = $queryBuilder->getQuery()->getResult();
+
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+
+        $dompdf = new Dompdf($options);
+        $html = $this->renderView('internship/export_pdf.html.twig', [
+            'internships' => $internships,
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        return new Response(
+            $dompdf->output(),
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="internships.pdf"'
+            ]
+        );
+    }
+
+    #[Route('/export', name: 'app_internship_export', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    public function exportToExcel(Request $request, EntityManagerInterface $entityManager): StreamedResponse
+    {
+        // Récupération des paramètres de recherche
+        $searchTerms = $request->query->all('search');
+        $searchFields = $request->query->all('search_field');
+
+        // Construction de la requête
+        $queryBuilder = $entityManager->getRepository(Internship::class)->createQueryBuilder('i')
+            ->leftJoin('i.company', 'c')
+            ->leftJoin('i.school', 's')
+            ->where('i.is_verified = true');
+
+        // Application des filtres de recherche
+        if (!empty($searchTerms) && !empty($searchFields)) {
+            foreach ($searchTerms as $index => $term) {
+                if (!empty($term) && isset($searchFields[$index])) {
+                    switch ($searchFields[$index]) {
+                        case 'title':
+                            $queryBuilder->andWhere('i.title LIKE :searchTerm' . $index)
+                                ->setParameter('searchTerm' . $index, "%{$term}%");
+                            break;
+                        case 'startDate':
+                            try {
+                                $date = new \DateTime($term);
+                                $queryBuilder->andWhere('i.start_date = :startDate' . $index)
+                                    ->setParameter('startDate' . $index, $date);
+                            } catch (\Exception $e) {
+                                // Gérer l'erreur de date invalide
+                            }
+                            break;
+                        case 'endDate':
+                            try {
+                                $date = new \DateTime($term);
+                                $queryBuilder->andWhere('i.end_date = :endDate' . $index)
+                                    ->setParameter('endDate' . $index, $date);
+                            } catch (\Exception $e) {
+                                // Gérer l'erreur de date invalide
+                            }
+                            break;
+                        case 'company':
+                            $queryBuilder->andWhere('c.name LIKE :company' . $index)
+                                ->setParameter('company' . $index, "%{$term}%");
+                            break;
+                        case 'school':
+                            $queryBuilder->andWhere('s.name LIKE :school' . $index)
+                                ->setParameter('school' . $index, "%{$term}%");
+                            break;
+                    }
+                }
+            }
+        }
+
+        $internships = $queryBuilder->getQuery()->getResult();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        // En-têtes
+        $headers = ['ID', 'Title', 'Start Date', 'End Date', 'Intern', 'School', 'Company', 'Activity List', 'Visit Report'];
+        foreach ($headers as $key => $header) {
+            $sheet->setCellValue(chr(65 + $key) . '1', $header);
+        }
+        
+        // Données
+        $row = 2;
+        foreach ($internships as $internship) {
+            $sheet->setCellValue('A' . $row, $internship->getId());
+            $sheet->setCellValue('B' . $row, $internship->getTitle());
+            $sheet->setCellValue('C' . $row, $internship->getStartDate() ? $internship->getStartDate()->format('Y-m-d') : '');
+            $sheet->setCellValue('D' . $row, $internship->getEndDate() ? $internship->getEndDate()->format('Y-m-d') : '');
+            $sheet->setCellValue('E' . $row, $internship->getIntern() ? $internship->getIntern()->getId() : '');
+            $sheet->setCellValue('F' . $row, $internship->getSchool() ? $internship->getSchool()->getId() : '');
+            $sheet->setCellValue('G' . $row, $internship->getCompany() ? $internship->getCompany()->getId() : '');
+            $sheet->setCellValue('H' . $row, $internship->getActivityList() ? 'Oui' : 'Non');
+            $sheet->setCellValue('I' . $row, $internship->getVisitReport() ? 'Oui' : 'Non');
+            $row++;
+        }
+
+        $response = new StreamedResponse(function() use ($spreadsheet) {
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+        });
+
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="internships.xlsx"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        return $response;
+    }
+
     #[Route('/{id}', name: 'app_internship_show', methods: ['GET'])]
     #[IsGranted('ROLE_USER')] // <- Maintenant tous les utilisateurs peuvent voir les stages
     public function show(Internship $internship): Response
@@ -237,81 +407,5 @@ final class InternshipController extends AbstractController
         }
 
         return $this->redirectToRoute('app_internship_index');
-    }
-
-    #[Route('/export-pdf', name: 'app_internship_export_pdf', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
-    public function exportPdf(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $queryBuilder = $entityManager->getRepository(Internship::class)->createQueryBuilder('i')
-            ->where('i.is_verified = true');
-
-        $internships = $queryBuilder->getQuery()->getResult();
-
-        $options = new Options();
-        $options->set('defaultFont', 'Arial');
-
-        $dompdf = new Dompdf($options);
-        $html = $this->renderView('internship/export_pdf.html.twig', [
-            'internships' => $internships,
-        ]);
-
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-
-        return new Response(
-            $dompdf->output(),
-            200,
-            [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="internships.pdf"'
-            ]
-        );
-    }
-
-    #[Route('/export', name: 'app_internship_export', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
-    public function exportToExcel(Request $request, EntityManagerInterface $entityManager): StreamedResponse
-    {
-        $queryBuilder = $entityManager->getRepository(Internship::class)->createQueryBuilder('i')
-            ->where('i.is_verified = true');
-
-        $internships = $queryBuilder->getQuery()->getResult();
-
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        
-        // En-têtes
-        $headers = ['ID', 'Title', 'Start Date', 'End Date', 'Intern', 'School', 'Company', 'Activity List', 'Visit Report'];
-        foreach ($headers as $key => $header) {
-            $sheet->setCellValue(chr(65 + $key) . '1', $header);
-        }
-        
-        // Données
-        $row = 2;
-        foreach ($internships as $internship) {
-            $sheet->setCellValue('A' . $row, $internship->getId());
-            $sheet->setCellValue('B' . $row, $internship->getTitle());
-            $sheet->setCellValue('C' . $row, $internship->getStartDate() ? $internship->getStartDate()->format('Y-m-d') : '');
-            $sheet->setCellValue('D' . $row, $internship->getEndDate() ? $internship->getEndDate()->format('Y-m-d') : '');
-            $sheet->setCellValue('E' . $row, $internship->getIntern() ? $internship->getIntern()->getId() : '');
-            $sheet->setCellValue('F' . $row, $internship->getSchool() ? $internship->getSchool()->getId() : '');
-            $sheet->setCellValue('G' . $row, $internship->getCompany() ? $internship->getCompany()->getId() : '');
-            $sheet->setCellValue('H' . $row, $internship->getActivityList() ? 'Oui' : 'Non');
-            $sheet->setCellValue('I' . $row, $internship->getVisitReport() ? 'Oui' : 'Non');
-            $row++;
-        }
-
-        $response = new StreamedResponse(function() use ($spreadsheet) {
-            $writer = new Xlsx($spreadsheet);
-            $writer->save('php://output');
-        });
-
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $response->headers->set('Content-Disposition', 'attachment;filename="internships.xlsx"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
-        return $response;
     }
 }
