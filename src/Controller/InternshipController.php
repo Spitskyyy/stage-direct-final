@@ -109,6 +109,10 @@ final class InternshipController extends AbstractController
     {
         $internship = new Internship();
         
+        // Définir automatiquement l'utilisateur connecté comme stagiaire
+        $internship->setIntern($this->getUser());
+        $internship->setCreator($this->getUser());
+
         // Récupérer l'entreprise depuis l'URL si elle est fournie
         $companyId = $request->query->get('company');
         if ($companyId) {
@@ -118,8 +122,9 @@ final class InternshipController extends AbstractController
             }
         }
         
-        $internship->setCreator($this->getUser());
-        $form = $this->createForm(InternshipType::class, $internship);
+        $form = $this->createForm(InternshipType::class, $internship, [
+            'is_new' => true  // Passer une option pour indiquer que c'est un nouveau stage
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

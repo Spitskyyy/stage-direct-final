@@ -26,11 +26,18 @@ class InternshipType extends AbstractType
             ->add('end_date', null, [
                 'widget' => 'single_text',
                 'label' => 'Date de fin'
-            ])
-            ->add('intern', EntityType::class, [
+            ]);
+
+        // Ajouter le champ intern seulement si ce n'est pas un nouveau stage
+        if (!$options['is_new']) {
+            $builder->add('intern', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'email',
-            ])
+                'disabled' => true
+            ]);
+        }
+
+        $builder
             ->add('school', EntityType::class, [
                 'class' => School::class,
                 'choice_label' => 'name',
@@ -46,6 +53,7 @@ class InternshipType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Internship::class,
+            'is_new' => false,  // Option par défaut
         ]);
     }
 }

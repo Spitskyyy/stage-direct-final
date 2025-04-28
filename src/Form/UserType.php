@@ -24,14 +24,13 @@ class UserType extends AbstractType
             ->add('roles', ChoiceType::class, [
                 'choices' => [
                     'Utilisateur' => 'ROLE_USER',
-                    'Étudiant' => 'ROLE_STUDENT', 
+                    'Étudiant' => 'ROLE_STUDENT',
                     'Professeur' => 'ROLE_TEACHER',
                     'Modérateur' => 'ROLE_MODERATOR',
                     'Admin' => 'ROLE_ADMIN'
                 ],
                 'multiple' => true,
-                'expanded' => true, // Affiche sous forme de cases à cocher
-                'label' => 'Rôles',
+                'expanded' => true
             ])            
             ->add('grade', EntityType::class, [
                 'class' => Grade::class,
