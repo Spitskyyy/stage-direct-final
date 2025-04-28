@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Internship;
 use App\Form\InternshipType;
+use App\Entity\Company; // Ajouter cette ligne
+use App\Entity\VisitReport;
+use App\Entity\ActivityList;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -17,8 +20,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use App\Entity\VisitReport;
-use App\Entity\ActivityList;
 
 #[Route('/internship')]
 final class InternshipController extends AbstractController
@@ -107,6 +108,16 @@ final class InternshipController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $internship = new Internship();
+        
+        // Récupérer l'entreprise depuis l'URL si elle est fournie
+        $companyId = $request->query->get('company');
+        if ($companyId) {
+            $company = $entityManager->getRepository(Company::class)->find($companyId);
+            if ($company) {
+                $internship->setCompany($company);
+            }
+        }
+        
         $internship->setCreator($this->getUser());
         $form = $this->createForm(InternshipType::class, $internship);
         $form->handleRequest($request);
