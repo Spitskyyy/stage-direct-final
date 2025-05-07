@@ -58,11 +58,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Speciality $Speciality = null;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $is_verified_user = null;
+    private ?bool $is_verified_user = false;  // Modifier cette ligne
 
     public function __construct()
     {
         $this->internships = new ArrayCollection();
+        $this->is_verified_user = false;      // Ajouter cette ligne
+        $this->isVerified = false;            // Ajouter cette ligne
     }
 
     public function getId(): ?int
@@ -215,9 +217,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->isVerified = $isVerified;
 
+        // Vérifier si les deux conditions sont remplies
+        if ($this->isVerified && $this->is_verified_user) {
+            $roles = $this->getRoles();
+            if (!in_array('ROLE_STUDENT', $roles)) {
+                $this->roles[] = 'ROLE_STUDENT';
+            }
+        }
+
         return $this;
     }
-
 
     public function getSpeciality(): ?Speciality
     {
@@ -231,7 +240,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function __toString(): string 
+    public function __toString(): string
     {
         if (isset($this->firstname)) {
             return $this->getFirstName() . " " . $this->getLastname();
@@ -249,8 +258,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->is_verified_user = $is_verified_user;
 
+        // Vérifier si les deux conditions sont remplies
+        if ($this->isVerified && $this->is_verified_user) {
+            $roles = $this->getRoles();
+            if (!in_array('ROLE_STUDENT', $roles)) {
+                $this->roles[] = 'ROLE_STUDENT';
+            }
+        }
+
         return $this;
     }
+
 
 
 }

@@ -116,10 +116,24 @@ final class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    #[IsGranted('ROLE_MODERATOR')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, UserRepository $userRepository): Response
     {
-        return $this->redirectToRoute('app_register');
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setIsVerified(false);
+            $user->setIsVerifiedUser(false);
+            $userRepository->save($user, true);
+
+            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('user/new.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
     }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]

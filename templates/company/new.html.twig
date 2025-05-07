@@ -1,112 +1,113 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Company{% endblock %}
+{% block title %}New Company
+{% endblock %}
 
 {% block body %}
-<div class="flex items-center justify-center min-h-screen bg-gray-100 light:bg-gray-900 ">
-	<div class="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-        <h5 class="text-xl font-medium text-gray-900 dark:text-white text-center mb-4">Créer une nouvelle entreprise</h5>
+	<div class="flex items-center justify-center min-h-screen bg-gray-100 light:bg-gray-900 ">
+		<div class="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+			<h5 class="text-xl font-medium text-gray-900 dark:text-white text-center mb-4">Créer une nouvelle entreprise</h5>
 
-        {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
-            <div>
-                <label for="{{ form.name.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    {{ form.name.vars.label }}
-                    Nom de l'entreprise
-                </label>
-                {{ form_widget(form.name, {'attr': {
+			{{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+			<div>
+				<label for="{{ form.name.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+					{{ form.name.vars.label }}
+					Nom de l'entreprise
+				</label>
+				{{ form_widget(form.name, {'attr': {
                     'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                 }}) }}
-                {{ form_errors(form.name) }}
-            </div>
+				{{ form_errors(form.name) }}
+			</div>
 
-            <div>
-                <label for="{{ form.address.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    {{ form.address.vars.label }}
-                    Adresse
-                </label>
-                {{ form_widget(form.address, {'attr': {
+			<div>
+				<label for="{{ form.address.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+					{{ form.address.vars.label }}
+					Adresse
+				</label>
+				{{ form_widget(form.address, {'attr': {
                     'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                 }}) }}
-                {{ form_errors(form.address) }}
-            </div>
+				{{ form_errors(form.address) }}
+			</div>
 
-            <div>
-                <label for="{{ form.city.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    {{ form.city.vars.label }}
-                    Ville
-                </label>
-                {{ form_widget(form.city, {'attr': {
+			<div>
+				<label for="{{ form.city.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+					{{ form.city.vars.label }}
+					Ville
+				</label>
+				{{ form_widget(form.city, {'attr': {
                     'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                 }}) }}
-                {{ form_errors(form.city) }}
-            </div>
+				{{ form_errors(form.city) }}
+			</div>
 
-            <div>
-                <label for="{{ form.zip.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    {{ form.zip.vars.label }}
-                    Code Postal
-                </label>
-                {{ form_widget(form.zip, {'attr': {
+			<div>
+				<label for="{{ form.zip.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+					{{ form.zip.vars.label }}
+					Code Postal
+				</label>
+				{{ form_widget(form.zip, {'attr': {
                     'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                 }}) }}
-                {{ form_errors(form.zip) }}
-            </div>
+				{{ form_errors(form.zip) }}
+			</div>
 
-            <div>
-                <label for="{{ form.country.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    {{ form.country.vars.label }}
-                    Pays
-                </label>
-                {{ form_widget(form.country, {'attr': {
+			<div>
+				<label for="{{ form.country.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+					{{ form.country.vars.label }}
+					Pays
+				</label>
+				{{ form_widget(form.country, {'attr': {
                     'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                 }}) }}
-                {{ form_errors(form.country) }}
-            </div>
+				{{ form_errors(form.country) }}
+			</div>
 
-            <div>
-                <label for="{{ form.phone.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    {{ form.phone.vars.label }}
-                    Téléphone
-                </label>
-                {{ form_widget(form.phone, {'attr': {
+			<div>
+				<label for="{{ form.phone.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+					{{ form.phone.vars.label }}
+					Téléphone
+				</label>
+				{{ form_widget(form.phone, {'attr': {
                     'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                 }}) }}
-                {{ form_errors(form.phone) }}
-            </div>
+				{{ form_errors(form.phone) }}
+			</div>
 
-            <div>
-                <label for="{{ form.email.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    {{ form.email.vars.label }}
-                    Email
-                </label>
-                {{ form_widget(form.email, {'attr': {
+			<div>
+				<label for="{{ form.email.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+					{{ form.email.vars.label }}
+					Email
+				</label>
+				{{ form_widget(form.email, {'attr': {
                     'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                 }}) }}
-                {{ form_errors(form.email) }}
-            </div>
+				{{ form_errors(form.email) }}
+			</div>
 
-            <div>
-                <label for="{{ form.isVerified.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    {{ form.isVerified.vars.label }}
-                        Is Verified
-                </label>
-                {{ form_widget(form.isVerified, {'attr': {
+			{% if is_granted('ROLE_ADMIN') %}
+				<div>
+					<label for="{{ form.isVerified.vars.id }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+						{{ form.isVerified.vars.label }}
+						Is Verified
+					</label>
+					{{ form_widget(form.isVerified, {'attr': {
                     'class': 'w-6 h-6 appearance-none border border-gray-300 rounded-md checked:bg-blue-500 checked:border-blue-500 focus:ring-2 focus:ring-blue-400 cursor-pointer dark:bg-gray-600 dark:border-gray-500 dark:checked:bg-blue-600 dark:focus:ring-blue-500'
                 }}) }}
-                {{ form_errors(form.isVerified) }}
-            </div>
+					{{ form_errors(form.isVerified) }}
+				</div>
+			{% endif %}
+			<button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+				Créer
+			</button>
 
-            <button type="submit" 
-                class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                Créer
-            </button>
-
-            <div class="text-sm font-medium text-gray-500 dark:text-gray-300 text-center">
-                <a href="{{ path('app_company_index') }}" class="text-blue-700 hover:underline dark:text-blue-500">
-                    Retour à la liste
-                </a>
-            </div>
-        {{ form_end(form) }}
-    </div>
-</div>
+			<div class="text-sm font-medium text-gray-500 dark:text-gray-300 text-center">
+				<a href="{{ path('app_company_index') }}" class="text-blue-700 hover:underline dark:text-blue-500">
+					Retour à la liste
+				</a>
+			</div>
+			{{ form_end(form) }}
+		</div>
+	</div>
 {% endblock %}
